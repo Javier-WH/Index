@@ -1,0 +1,9 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+:root{
+    --navBarHeight : 100px;
+    --mainColor: rgb(18, 24, 61);
+    --secondaryColor: rgb(177, 182, 211);
+}
