@@ -3,7 +3,7 @@ const StudentList = require("../database/sequalize/models/studentList.model.js")
 const Grades = require("../database/sequalize/models/grades.model.js")
 
 function getApp(req, res) {
-    res.sendFile(res.sendFile(path.join(__dirname, "../../client/app/index.html")))
+    res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
 }
 
 async function getStudentList(req, res) {
