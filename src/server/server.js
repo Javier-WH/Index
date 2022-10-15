@@ -6,7 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config({ path: path.join(__dirname, ".env") });
 
 
-
+app.use(require("./libraries/sessionStore"))
 app.use(express.static(path.join(__dirname,"../client/" )));
 
 
@@ -14,6 +14,7 @@ app.use(express.static(path.join(__dirname,"../client/" )));
 app.use(require("./routes/home.routes.js"));
 app.use(require("./routes/login.routes.js"));
 app.use(require("./routes/student.routes.js"));
+app.use(require("./routes/teacherSubjects.routes.js"));
 
 require("./database/sequalize/relations/oneToMany.js");
 app.listen(process.env.PORT, process.env.IP, error=>{

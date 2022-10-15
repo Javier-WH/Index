@@ -1,5 +1,5 @@
 const {Model, Sequelize, DataTypes } = require('@sequelize/core');
-const sequelize = require("../connection.js");
+const sequelize = require("../../connection.js");
 
 class StudentList extends Model {}
 StudentList.init({

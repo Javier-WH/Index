@@ -1,6 +1,6 @@
 const path = require("path");
-const StudentList = require("../database/sequalize/models/studentList.model.js");
-const Grades = require("../database/sequalize/models/grades.model.js")
+const StudentList = require("../database/sequalize/models/students/studentList.model.js");
+const Grades = require("../database/sequalize/models/students/grades.model.js")
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))

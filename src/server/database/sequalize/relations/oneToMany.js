@@ -1,5 +1,5 @@
-const student = require("../models/studentList.model.js");
-const grades = require("../models/grades.model.js");
+const student = require("../models/students/studentList.model.js");
+const grades = require("../models/students/grades.model.js");
 
 
 
