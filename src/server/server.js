@@ -15,6 +15,8 @@ app.use(require("./routes/home.routes.js"));
 app.use(require("./routes/login.routes.js"));
 app.use(require("./routes/student.routes.js"));
 app.use(require("./routes/teacherSubjects.routes.js"));
+app.use(require("./routes/studentGrades.routes.js"));
+
 
 require("./database/sequalize/relations/oneToMany.js");
 app.listen(process.env.PORT, process.env.IP, error=>{

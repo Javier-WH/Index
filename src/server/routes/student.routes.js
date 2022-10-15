@@ -4,7 +4,9 @@ const {getStudentList} = require("../controllers/getStudent.controller.js");
 
 
 
-Router.get("/studentList", getStudentList)
+Router.get("/studentList", express.urlencoded(), getStudentList)
+
+
 
 
 module.exports = Router;

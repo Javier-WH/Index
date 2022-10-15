@@ -8,15 +8,22 @@ function getApp(req, res) {
 
 async function getStudentList(req, res) {
     try {
+        let seccionData = req.query.seccion.split(" ");
+        let schoolYear = seccionData[1][0];
+        let seccion = seccionData[1][1];
+
         let rawList = await StudentList.findAll({
             include: {
                 model: Grades,
                 as: "grades",
                 where: {
-                    period: 2022
+                    period: 2022,
+                    section:seccion,
+                    schoolYear
                 }
             }
         })
+        
         if (rawList.length > 0) {
             let list = rawList.map(register => {
                 let student = {

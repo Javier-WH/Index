@@ -9,6 +9,7 @@ async function getTeacherSubjects(req, res){
     let id =  req.session.teachersID
     try {
         let subjects = await Subjects.findAll({where:{teacherId:id}});
+   
         res.json(subjects[0].subjects)
     } catch (error) {
         res.json([]);

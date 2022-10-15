@@ -18,7 +18,6 @@ async function validateUser(req, res) {
                 res.json({ error: "La contraseña no es correcta" })
             } else {
                 req.session.teachersID = userFounded.id;
-                
                 //la respuesta depende si es un profesor, administrador o representante
                 if (type === 0) {
                     res.json({ code: 1 });
