@@ -1,37 +1,18 @@
 const path = require("path");
 const Subjects = require("../database/sequalize/models/teachers/subjects.model")
-
+const Teacher = require("../database/sequalize/models/teachers/teachers.model")
 
 async function getTeacherSubjects(req, res){
-    /*let id =  req.session.teachersID;
-    try {
-        let subjects = await Subjects.findAll({
-            where:{
-                id
-            }
-        });
-        
-        res.send(subjects);
-
-    } catch (error) {
-       
+    if(!req.session.teachersID){
+        return
     }
-
-   */
-
-    res.json( 
-        [
-            {
-                "Matemática": ["1A", "1B", "4A"],
-                "Física": ["3A", "4B"],
-                "Ingles": ["2A", "3A"],
-                "Deporte": ["2A", "3A"]
-            }
-        ]
-    )
-
-
-
+    let id =  req.session.teachersID
+    try {
+        let subjects = await Subjects.findAll({where:{teacherId:id}});
+        res.json(subjects[0].subjects)
+    } catch (error) {
+        res.json([]);
+    }
 }
 
 module.exports = {getTeacherSubjects};

@@ -17,7 +17,7 @@ async function getStudentList(req, res) {
                 }
             }
         })
-        if(rawList.length > 0){
+        if (rawList.length > 0) {
             let list = rawList.map(register => {
                 let student = {
                     ci: register.ci,
@@ -29,9 +29,9 @@ async function getStudentList(req, res) {
                 };
                 return student;
             });
-    
+
             res.json(list);
-        }else{
+        } else {
             res.json([]);
         }
     } catch (error) {
@@ -44,3 +44,21 @@ module.exports = {
     getApp,
     getStudentList
 }
+
+
+/*
+{
+                "Matemática":{
+                    "lap1": "18",
+                    "lap2": "19",
+                    "lap3": "20",
+                    "def": "19"
+                },"Física":{
+                    "lap1": "12",
+                    "lap2": "16",
+                    "lap3": "14",
+                    "def": "13"
+ }
+
+
+*/
