@@ -42,7 +42,6 @@ async function getStudentList(req, res) {
             res.json([]);
         }
     } catch (error) {
-        console.error(error);
         res.status(500).json([]);
     }
 }
