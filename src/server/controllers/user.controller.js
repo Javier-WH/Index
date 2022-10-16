@@ -12,10 +12,10 @@ async function getUserName(req, res){
 
         let name = `${teacher[0].names} ${teacher[0].lastNames}`;
 
-        res.send(name);
+        res.json({name, id});
 
     } catch (error) {
-        res.status(500).send("Ha ocurrido un error");
+        res.status(500).json({error: "Ha ocurrido un error"});
     }
     
 
