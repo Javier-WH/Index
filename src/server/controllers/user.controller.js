@@ -15,7 +15,6 @@ async function getUserName(req, res){
         res.send(name);
 
     } catch (error) {
-        console.log(error);
         res.status(500).send("Ha ocurrido un error");
     }
     
