@@ -1,5 +1,13 @@
 const Teachers = require("../database/sequalize/models/teachers/teachers.model")
 
+/*
+*
+*
+*
+*
+*
+*regrresa los datos de un profesor
+*/
 async function getTeacherData(req, res) {
     let id = req.query.id;
 
@@ -26,4 +34,25 @@ async function getTeacherData(req, res) {
     }
 }
 
-module.exports = { getTeacherData }
+/*
+*
+*
+*
+*
+*
+*actualiza los datos un profesor
+*/
+
+async function setTeacherData(req, res){
+    try {
+        let data = req.body;
+        let id = data.id;
+        delete data.id;
+        await Teachers.update(data, {where: {id}});
+        res.json({message: "OK"})
+    } catch (error) {
+        res.json({error: "Ocurrió un erro desconocido al intentar actualizar los datos del profesor"})
+    }
+}
+
+module.exports = { getTeacherData, setTeacherData }
