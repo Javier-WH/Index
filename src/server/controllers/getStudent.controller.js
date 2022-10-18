@@ -64,11 +64,10 @@ module.exports = {
   names: '123213',
   lastNames: '213213',
   birthdate: '2022-01-01',
-  studentPhone: '32132',
-  studenEmail: '123213',
   grade: '1',
   seccion: 'A',
   period: '2022',
+  //////////////////////
   previusSchool: '123213',
   birthCountry: 'Venezuela',
   birthState: 'Distrito Capital',
@@ -76,6 +75,7 @@ module.exports = {
   nationality: 'v',
   married: 's',
   gender: 'f',
+  /////////
   birthAct: false,
   birthActCopy: true,
   _ci: true,
@@ -84,10 +84,14 @@ module.exports = {
   gradesCertificateCopy: true,
   canainaRecipe: false,
   sixGrade: false,
+  ////////
+  studentPhone: '32132',
+  studenEmail: '123213',
   facebook: '123',
   twitter: '123',
   tikTok: '213',
   instagram: '123',
+  /////////
   motherName: 'ds21sd',
   motherLastName: 'sadd',
   motherCi: '2321',
@@ -97,16 +101,19 @@ module.exports = {
   fatherCi: '213',
   fatherPhone: '213',
   siblinsNumber: '21',
+  /////////
   parroquia: '21321',
   town: '123213',
   urbanizacion: '213213',
   stdAddres: '12321',
   whoLive: '213',
+  ///////
   weight: '12321',
   height: '3213',
   chessSize: '213213',
   pantsSize: '21321',
   feetSize: '3',
+  /////
   gravidez: 'n',
   pregnancyTime: '',
   influenza: true,
@@ -117,6 +124,7 @@ module.exports = {
   harth: false,
   drugAllegies: '213213',
   foodAllegies: '123213',
+  ////
   houseType: 'CasaFamiliar',
   houseCondition: 'Media',
   emergencyName: '12321',
@@ -126,10 +134,12 @@ module.exports = {
   tablet: true,
   smarthPhone: true,
   pc: true,
+  /////
   becas: true,
   becaName: '21321',
   studentPatriaCode: '12321',
   studentPatriaSerial: '123213',
+  ////
   tutorName: '12321',
   tutorLastName: '213',
   tutorCi: '12321',
