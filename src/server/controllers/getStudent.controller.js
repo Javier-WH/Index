@@ -10,7 +10,7 @@ const Medical = require("../database/sequalize/models/students/studentMedicalInf
 const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
 const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
 
-
+const {getPensum} = require("../controllers/pensum.controller.js");
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
@@ -67,22 +67,24 @@ async function insertStudent(req, res) {
         let tutorCi = studentData.tutorCi;
 
         let tutor = await Tutors.findAll({
-            where:{
+            where: {
                 tutorCi
             }
         }, { transaction: insertStudent })
 
-        if(tutor.length <= 0){
+        if (tutor.length <= 0) {
             res.json({ error: "El tutor no está registrado" })
             return
         }
-
+        let tutorId = tutor[0].id;
+        
         let std = await StudentList.create({
             names: studentData.names,
             lastNames: studentData.lastNames,
             ci: studentData.ci,
             gender: studentData.gender,
-            birthdate: studentData.birthdate
+            birthdate: studentData.birthdate,
+            tutorId
         }, { transaction: insertStudent });
 
         studentId = std.id;
@@ -91,20 +93,7 @@ async function insertStudent(req, res) {
             period: studentData.period,
             section: studentData.seccion,
             schoolYear: studentData.grade,
-            subjects: {
-                Matemática: {
-                    lap1: 18,
-                    lap2: 19,
-                    lap3: 20,
-                    def: 19
-                },
-                Física: {
-                    lap1: 12,
-                    lap2: 16,
-                    lap3: 14,
-                    def: 13
-                }
-            },
+            subjects: await getPensum(studentData.grade),
             studentId
         }, { transaction: insertStudent });
 
@@ -200,11 +189,11 @@ async function insertStudent(req, res) {
             studentId
         }, { transaction: insertStudent })
 
-
-        await Tutors.create({
+    
+        await Tutors.update({
             tutorName: studentData.tutorName,
             tutorLastName: studentData.tutorLastName,
-            tutorCi: studentData.tutorCi,
+            // tutorCi: studentData.tutorCi,
             tutorNationality: studentData.tutorNationality,
             tutorInstruction: studentData.tutorInstruction,
             tutorPhone: studentData.tutorPhone,
@@ -216,15 +205,21 @@ async function insertStudent(req, res) {
             tutorBankAux: studentData.tutorBankAux,
             tutorBankAccounType: studentData.tutorBankAccounType,
             tutorBankAccoun: studentData.tutorBankAccoun,
-            studentId
-        }, { transaction: insertStudent })
+
+        }, {
+            where: {
+                tutorCi
+            },
+            transaction: insertStudent
+        })
 
 
 
         await insertStudent.commit();
     } catch (error) {
-        console.log(error)
+        //console.log(error)
         await insertStudent.rollback();
+        res.json({ error: "Ha ocurrido un error, no se ha inscrito al estudiante" })
 
     }
     res.json({ message: "OK" })

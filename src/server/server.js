@@ -4,7 +4,7 @@ const app = express();
 const IP = require("./libraries/networkInterfaces.js");
 const dotenv = require("dotenv");
 dotenv.config({ path: path.join(__dirname, ".env") });
-
+const rutines = require("./libraries/startRoutines.js");
 
 app.use(require("./libraries/sessionStore"))
 app.use(express.static(path.join(__dirname,"../client/" )));
@@ -26,5 +26,7 @@ app.listen(process.env.PORT, process.env.IP, error=>{
         console.error(error);
         return
     }
+    rutines();
     console.log(`El servidor se ha iniciado en -> ${IP()}:${process.env.PORT} `);
+
 })
