@@ -20,7 +20,7 @@ function saveGrades(req, res) {
 
             let query = await Grades.findAll({
                 where: {
-                    userId: id,
+                    studentId: id,
                     section,
                     schoolYear
                 }
@@ -46,7 +46,7 @@ function saveGrades(req, res) {
                 subjects: oldSubjects
             }, {
                 where: {
-                    userId: id,
+                    studentId: id,
                     section,
                     schoolYear,
                     period: 2022

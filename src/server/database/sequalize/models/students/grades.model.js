@@ -1,4 +1,4 @@
-const {Model, Sequelize, DataTypes } = require('@sequelize/core');
+const {Model, DataTypes } = require('@sequelize/core');
 const sequelize = require("../../connection.js");
 
 class Grades extends Model {}
@@ -6,7 +6,7 @@ Grades.init({
     subjects:DataTypes.JSON,
     period: DataTypes.INTEGER,
     section: DataTypes.CHAR,
-    schoolYear: DataTypes.INTEGER
+    schoolYear: DataTypes.INTEGER //grade
 }, {
     sequelize,
     modelName: "grades",
@@ -14,3 +14,11 @@ Grades.init({
 });
 
 module.exports = Grades
+
+/*
+  subjects
+  period: '2022',
+  seccion: 'A',
+  grade: '1',
+
+*/

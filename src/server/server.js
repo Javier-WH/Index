@@ -19,7 +19,7 @@ app.use(require("./routes/studentGrades.routes.js"));
 app.use(require("./routes/user.routes.js"));
 
 
-require("./database/sequalize/relations/oneToMany.js");
+require("./database/sequalize/relations/relations.js");
 app.listen(process.env.PORT, process.env.IP, error=>{
     console.clear();
     if(error){

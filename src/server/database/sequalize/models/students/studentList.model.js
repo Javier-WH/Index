@@ -7,9 +7,7 @@ StudentList.init({
     lastNames: DataTypes.STRING,
     ci: DataTypes.INTEGER,
     gender: DataTypes.CHAR,
-    birthdate: Sequelize.DATE,
-    phone: DataTypes.STRING,
-    email: DataTypes.STRING,
+    birthdate: Sequelize.DATE
 }, {
     sequelize,
     modelName: "studentList",
@@ -17,3 +15,12 @@ StudentList.init({
 });
 
 module.exports = StudentList
+
+
+/*
+  names: '123213',
+  lastNames: '213213',
+  ci: '12312',
+  gender: 'f',
+  birthdate: '2022-01-01',
+*/

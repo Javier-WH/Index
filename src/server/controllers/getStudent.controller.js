@@ -1,6 +1,16 @@
 const path = require("path");
+const sequelize = require("../database/sequalize/connection.js");
 const StudentList = require("../database/sequalize/models/students/studentList.model.js");
-const Grades = require("../database/sequalize/models/students/grades.model.js")
+const Grades = require("../database/sequalize/models/students/grades.model.js");
+const Address = require("../database/sequalize/models/students/studentAddress.model.js");
+const Documents = require("../database/sequalize/models/students/studentDocuments.model.js");
+const Contacts = require("../database/sequalize/models/students/studentContact.model.js");
+const Parents = require("../database/sequalize/models/students/studentParents.model.js");
+const Medical = require("../database/sequalize/models/students/studentMedicalInfo.model.js");
+const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
+const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
+
+
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
@@ -18,12 +28,12 @@ async function getStudentList(req, res) {
                 as: "grades",
                 where: {
                     period: 2022,
-                    section:seccion,
+                    section: seccion,
                     schoolYear
                 }
             }
         })
-        
+
         if (rawList.length > 0) {
             let list = rawList.map(register => {
                 let student = {
@@ -46,10 +56,179 @@ async function getStudentList(req, res) {
     }
 }
 /////
-async function insertStudent(req, res){
+async function insertStudent(req, res) {
 
-    console.log(req.body)
-    res.json({message:"OK"})
+
+
+    const insertStudent = await sequelize.transaction();
+
+    try {
+        let studentData = req.body;
+        let tutorCi = studentData.tutorCi;
+
+        let tutor = await Tutors.findAll({
+            where:{
+                tutorCi
+            }
+        }, { transaction: insertStudent })
+
+        if(tutor.length <= 0){
+            res.json({ error: "El tutor no está registrado" })
+            return
+        }
+
+        let std = await StudentList.create({
+            names: studentData.names,
+            lastNames: studentData.lastNames,
+            ci: studentData.ci,
+            gender: studentData.gender,
+            birthdate: studentData.birthdate
+        }, { transaction: insertStudent });
+
+        studentId = std.id;
+
+        await Grades.create({
+            period: studentData.period,
+            section: studentData.seccion,
+            schoolYear: studentData.grade,
+            subjects: {
+                Matemática: {
+                    lap1: 18,
+                    lap2: 19,
+                    lap3: 20,
+                    def: 19
+                },
+                Física: {
+                    lap1: 12,
+                    lap2: 16,
+                    lap3: 14,
+                    def: 13
+                }
+            },
+            studentId
+        }, { transaction: insertStudent });
+
+
+        await Address.create({
+            previusSchool: studentData.previusSchool,
+            birthCountry: studentData.birthCountry,
+            birthState: studentData.birthState,
+            birthPlace: studentData.birthPlace,
+            nationality: studentData.nationality,
+            married: studentData.married,
+            parroquia: studentData.parroquia,
+            town: studentData.town,
+            urbanizacion: studentData.urbanizacion,
+            stdAddres: studentData.stdAddres,
+            whoLive: studentData.whoLive,
+            studentId
+        }, { transaction: insertStudent })
+
+        await Documents.create({
+
+            birthAct: studentData.birthAct,
+            birthActCopy: studentData.birthActCopy,
+            _ci: studentData._ci,
+            photos: studentData.photos,
+            gradesCertificate: studentData.gradesCertificate,
+            gradesCertificateCopy: studentData.gradesCertificateCopy,
+            canainaRecipe: studentData.canainaRecipe,
+            sixGrade: studentData.sixGrade,
+            studentId
+
+        }, { transaction: insertStudent })
+
+
+        await Contacts.create({
+            studentPhone: studentData.studentPhone,
+            studenEmail: studentData.studenEmail,
+            facebook: studentData.facebook,
+            twitter: studentData.twitter,
+            tikTok: studentData.tikTok,
+            instagram: studentData.instagram,
+            studentId
+        }, { transaction: insertStudent })
+
+
+        await Parents.create({
+            motherName: studentData.motherName,
+            motherLastName: studentData.motherLastName,
+            motherCi: studentData.motherCi,
+            motherPhone: studentData.motherPhone,
+            fatherName: studentData.fatherName,
+            fatherLastName: studentData.fatherLastName,
+            fatherCi: studentData.fatherCi,
+            fatherPhone: studentData.fatherPhone,
+            siblinsNumber: studentData.siblinsNumber,
+            studentId
+        }, { transaction: insertStudent })
+
+        await Medical.create({
+            weight: studentData.weight,
+            height: studentData.height,
+            chessSize: studentData.chessSize,
+            pantsSize: studentData.pantsSize,
+            feetSize: studentData.feetSize,
+            gravidez: studentData.gravidez,
+            pregnancyTime: studentData.pregnancyTime,
+            influenza: studentData.influenza,
+            asma: studentData.asma,
+            diabetes: studentData.diabetes,
+            epilepsia: studentData.epilepsia,
+            tension: studentData.tension,
+            harth: studentData.harth,
+            drugAllegies: studentData.drugAllegies,
+            foodAllegies: studentData.foodAllegies,
+            studentId
+        }, { transaction: insertStudent });
+
+
+        await Resourses.create({
+            houseType: studentData.houseType,
+            houseCondition: studentData.houseCondition,
+            emergencyName: studentData.emergencyName,
+            emergencyPhone: studentData.emergencyPhone,
+            emergencyRelation: studentData.emergencyRelation,
+            canaima: studentData.canaima,
+            tablet: studentData.tablet,
+            smarthPhone: studentData.smarthPhone,
+            pc: studentData.pc,
+            becas: studentData.becas,
+            becaName: studentData.becaName,
+            studentPatriaCode: studentData.studentPatriaCode,
+            studentPatriaSerial: studentData.studentPatriaSerial,
+            studentId
+        }, { transaction: insertStudent })
+
+
+        await Tutors.create({
+            tutorName: studentData.tutorName,
+            tutorLastName: studentData.tutorLastName,
+            tutorCi: studentData.tutorCi,
+            tutorNationality: studentData.tutorNationality,
+            tutorInstruction: studentData.tutorInstruction,
+            tutorPhone: studentData.tutorPhone,
+            tutorEmail: studentData.tutorEmail,
+            tutorAddress: studentData.tutorAddress,
+            tutorPatriaCode: studentData.tutorPatriaCode,
+            tutorPatriaSrial: studentData.tutorPatriaSrial,
+            tutorBank: studentData.tutorBank,
+            tutorBankAux: studentData.tutorBankAux,
+            tutorBankAccounType: studentData.tutorBankAccounType,
+            tutorBankAccoun: studentData.tutorBankAccoun,
+            studentId
+        }, { transaction: insertStudent })
+
+
+
+        await insertStudent.commit();
+    } catch (error) {
+        console.log(error)
+        await insertStudent.rollback();
+
+    }
+    res.json({ message: "OK" })
+
 }
 
 
@@ -59,23 +238,33 @@ module.exports = {
     insertStudent
 }
 
-/**
- * ci: '12312',
+/** studentList
   names: '123213',
   lastNames: '213213',
+  ci: '12312',
+  gender: 'f',
   birthdate: '2022-01-01',
-  grade: '1',
-  seccion: 'A',
+
+  ////////// grades
+  subjects
   period: '2022',
-  //////////////////////
+  seccion: 'A',
+  grade: '1',
+
+  ///////////// studentAddress
   previusSchool: '123213',
   birthCountry: 'Venezuela',
   birthState: 'Distrito Capital',
   birthPlace: 'Municipio Libertador (Caracas)',
   nationality: 'v',
   married: 's',
-  gender: 'f',
-  /////////
+  parroquia: '21321',
+  town: '123213',
+  urbanizacion: '213213',
+  stdAddres: '12321',
+  whoLive: '213',
+
+  ///////// studentDocuments
   birthAct: false,
   birthActCopy: true,
   _ci: true,
@@ -84,14 +273,17 @@ module.exports = {
   gradesCertificateCopy: true,
   canainaRecipe: false,
   sixGrade: false,
-  ////////
+  
+  //////// studentContact
   studentPhone: '32132',
   studenEmail: '123213',
   facebook: '123',
   twitter: '123',
   tikTok: '213',
   instagram: '123',
-  /////////
+
+
+  /////////StudentParents
   motherName: 'ds21sd',
   motherLastName: 'sadd',
   motherCi: '2321',
@@ -101,19 +293,14 @@ module.exports = {
   fatherCi: '213',
   fatherPhone: '213',
   siblinsNumber: '21',
-  /////////
-  parroquia: '21321',
-  town: '123213',
-  urbanizacion: '213213',
-  stdAddres: '12321',
-  whoLive: '213',
-  ///////
+
+  
+  /////// StudentMedicalInfo
   weight: '12321',
   height: '3213',
   chessSize: '213213',
   pantsSize: '21321',
   feetSize: '3',
-  /////
   gravidez: 'n',
   pregnancyTime: '',
   influenza: true,
@@ -124,7 +311,8 @@ module.exports = {
   harth: false,
   drugAllegies: '213213',
   foodAllegies: '123213',
-  ////
+
+  ////studentResourses
   houseType: 'CasaFamiliar',
   houseCondition: 'Media',
   emergencyName: '12321',
@@ -134,12 +322,12 @@ module.exports = {
   tablet: true,
   smarthPhone: true,
   pc: true,
-  /////
   becas: true,
   becaName: '21321',
   studentPatriaCode: '12321',
   studentPatriaSerial: '123213',
-  ////
+
+  //// studentTutor
   tutorName: '12321',
   tutorLastName: '213',
   tutorCi: '12321',
@@ -160,6 +348,7 @@ module.exports = {
 
 
 /*
+students
 {
                 "Matemática":{
                     "lap1": "18",
@@ -172,6 +361,17 @@ module.exports = {
                     "lap3": "14",
                     "def": "13"
  }
+}
+teachers
+
+ [
+        {
+           "Matemática": ["1A", "1B", "4A"],
+            "Física": ["3A", "4B"],
+            "Biología":["2A", "3A"]
+        }
+    ]
+
 
 
 */
