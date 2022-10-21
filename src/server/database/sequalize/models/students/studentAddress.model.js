@@ -27,6 +27,7 @@ module.exports = StudentAddress
 
 
 /*
+sadasd
   previusSchool: '123213',
   birthCountry: 'Venezuela',
   birthState: 'Distrito Capital',
