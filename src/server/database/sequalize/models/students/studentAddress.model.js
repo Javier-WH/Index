@@ -13,7 +13,9 @@ StudentAddress.init({
     town: DataTypes.STRING,
     urbanizacion: DataTypes.STRING,
     stdAddres: DataTypes.STRING,
-    whoLive: DataTypes.STRING
+    whoLive: DataTypes.STRING,
+    municipio : DataTypes.STRING,
+    homeState: DataTypes.STRING
 }, {
     sequelize,
     modelName: "studentAddress",
@@ -36,5 +38,6 @@ module.exports = StudentAddress
   urbanizacion: '213213',
   stdAddres: '12321',
   whoLive: '213',
-
+  municipio,
+  homeState
 */

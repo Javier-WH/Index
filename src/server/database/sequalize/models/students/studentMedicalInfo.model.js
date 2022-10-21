@@ -5,7 +5,7 @@ class StudentMedicalInfo extends Model { }
 StudentMedicalInfo.init({
     weight: DataTypes.INTEGER,
     height: DataTypes.INTEGER,
-    chessSize: DataTypes.INTEGER,
+    chessSize: DataTypes.STRING,
     pantsSize: DataTypes.INTEGER,
     feetSize: DataTypes.INTEGER,
     gravidez: DataTypes.CHAR,

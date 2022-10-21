@@ -10,7 +10,7 @@ const Medical = require("../database/sequalize/models/students/studentMedicalInf
 const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
 const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
 
-const {getPensum} = require("../controllers/pensum.controller.js");
+const { getPensum } = require("../controllers/pensum.controller.js");
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
@@ -55,10 +55,8 @@ async function getStudentList(req, res) {
         res.status(500).json([]);
     }
 }
-/////
+///////////////
 async function insertStudent(req, res) {
-
-
 
     const insertStudent = await sequelize.transaction();
 
@@ -77,7 +75,7 @@ async function insertStudent(req, res) {
             return
         }
         let tutorId = tutor[0].id;
-        
+
         let std = await StudentList.create({
             names: studentData.names,
             lastNames: studentData.lastNames,
@@ -110,6 +108,8 @@ async function insertStudent(req, res) {
             urbanizacion: studentData.urbanizacion,
             stdAddres: studentData.stdAddres,
             whoLive: studentData.whoLive,
+            municipio: studentData.municipio,
+            homeState: studentData.homeState,
             studentId
         }, { transaction: insertStudent })
 
@@ -189,7 +189,7 @@ async function insertStudent(req, res) {
             studentId
         }, { transaction: insertStudent })
 
-    
+
         await Tutors.update({
             tutorName: studentData.tutorName,
             tutorLastName: studentData.tutorLastName,
@@ -216,131 +216,123 @@ async function insertStudent(req, res) {
 
 
         await insertStudent.commit();
+        res.json({ message: "OK" })
     } catch (error) {
-        //console.log(error)
+        console.log(error.message)
         await insertStudent.rollback();
         res.json({ error: "Ha ocurrido un error, no se ha inscrito al estudiante" })
 
     }
-    res.json({ message: "OK" })
 
 }
+
+////////////////////////
+
+async function getStudent(req, res) {
+
+    const setStudentTransacction = await sequelize.transaction();
+
+    try {
+        let reqCi = req.query.ci
+
+        let student = await StudentList.findAll({
+            where: {
+                ci: reqCi
+            }
+
+        }, { transaction: setStudentTransacction });
+
+        if(student.length <= 0){
+            res.status(404).json({error: "El alumno no está registrado"})
+            return
+        }
+
+        let studentId = student[0].id;
+        let tutorId = student[0].tutorId;
+        
+        let grades = await Grades.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+
+
+        let address = await Address.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        let documents = await Documents.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        let contacts = await Contacts.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        let parents = await Parents.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        let medical = await Medical.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        let resourses = await Resourses.findAll({
+            where:{
+                studentId
+            }
+        }, { transaction: setStudentTransacction });
+        
+        
+        let tutors = await Tutors.findAll({
+            where:{
+                id:tutorId
+            }
+        }, { transaction: setStudentTransacction });
+
+
+
+        setStudentTransacction.commit();
+        
+        let studentData = { 
+            ...student[0].dataValues, 
+            ...grades[0].dataValues, 
+            ...address[0].dataValues, 
+            ...documents[0].dataValues, 
+            ...contacts[0].dataValues, 
+            ...parents[0].dataValues, 
+            ...medical[0].dataValues, 
+            ...resourses[0].dataValues, 
+            ...tutors[0].dataValues 
+        }
+
+        res.json(studentData)
+    } catch (error) {
+        await setStudentTransacction.rollback();
+        console.log(error.message)
+        res.status(500).json({ error: "Ocurrió un error al buscar a este alumno" })
+    }
+}
+
+
 
 
 module.exports = {
     getApp,
     getStudentList,
-    insertStudent
+    insertStudent,
+    getStudent
 }
-
-/** studentList
-  names: '123213',
-  lastNames: '213213',
-  ci: '12312',
-  gender: 'f',
-  birthdate: '2022-01-01',
-
-  ////////// grades
-  subjects
-  period: '2022',
-  seccion: 'A',
-  grade: '1',
-
-  ///////////// studentAddress
-  previusSchool: '123213',
-  birthCountry: 'Venezuela',
-  birthState: 'Distrito Capital',
-  birthPlace: 'Municipio Libertador (Caracas)',
-  nationality: 'v',
-  married: 's',
-  parroquia: '21321',
-  town: '123213',
-  urbanizacion: '213213',
-  stdAddres: '12321',
-  whoLive: '213',
-
-  ///////// studentDocuments
-  birthAct: false,
-  birthActCopy: true,
-  _ci: true,
-  photos: false,
-  gradesCertificate: false,
-  gradesCertificateCopy: true,
-  canainaRecipe: false,
-  sixGrade: false,
-  
-  //////// studentContact
-  studentPhone: '32132',
-  studenEmail: '123213',
-  facebook: '123',
-  twitter: '123',
-  tikTok: '213',
-  instagram: '123',
-
-
-  /////////StudentParents
-  motherName: 'ds21sd',
-  motherLastName: 'sadd',
-  motherCi: '2321',
-  motherPhone: '213',
-  fatherName: 'dsa',
-  fatherLastName: 'asdas',
-  fatherCi: '213',
-  fatherPhone: '213',
-  siblinsNumber: '21',
-
-  
-  /////// StudentMedicalInfo
-  weight: '12321',
-  height: '3213',
-  chessSize: '213213',
-  pantsSize: '21321',
-  feetSize: '3',
-  gravidez: 'n',
-  pregnancyTime: '',
-  influenza: true,
-  asma: false,
-  diabetes: false,
-  epilepsia: true,
-  tension: true,
-  harth: false,
-  drugAllegies: '213213',
-  foodAllegies: '123213',
-
-  ////studentResourses
-  houseType: 'CasaFamiliar',
-  houseCondition: 'Media',
-  emergencyName: '12321',
-  emergencyPhone: '21321',
-  emergencyRelation: '213',
-  canaima: true,
-  tablet: true,
-  smarthPhone: true,
-  pc: true,
-  becas: true,
-  becaName: '21321',
-  studentPatriaCode: '12321',
-  studentPatriaSerial: '123213',
-
-  //// studentTutor
-  tutorName: '12321',
-  tutorLastName: '213',
-  tutorCi: '12321',
-  tutorNationality: 'e',
-  tutorInstruction: '1',
-  tutorPhone: '123213',
-  tutorEmail: '123213',
-  tutorAddress: '213',
-  tutorPatriaCode: '123123',
-  tutorPatriaSrial: '123',
-  tutorBank: 'BANCO DE VENEZUELA, S.A. BANCO UNIVERSAL.',
-  tutorBankAux: '',
-  tutorBankAccounType: 'ahorros',
-  tutorBankAccoun: '12321332131'
- * 
- * 
- */
-
 
 /*
 students
