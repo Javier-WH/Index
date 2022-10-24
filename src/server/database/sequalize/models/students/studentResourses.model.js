@@ -6,7 +6,7 @@ StudentResourses.init({
     houseType: DataTypes.STRING,
     houseCondition: DataTypes.STRING,
     emergencyName: DataTypes.STRING,
-    emergencyPhone: DataTypes.INTEGER,
+    emergencyPhone: DataTypes.STRING,
     emergencyRelation: DataTypes.STRING,
     canaima: DataTypes.BOOLEAN,
     tablet: DataTypes.BOOLEAN,

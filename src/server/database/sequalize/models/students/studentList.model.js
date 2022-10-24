@@ -5,7 +5,7 @@ class StudentList extends Model {}
 StudentList.init({
     names: DataTypes.STRING,
     lastNames: DataTypes.STRING,
-    ci: DataTypes.INTEGER,
+    ci: DataTypes.STRING,
     gender: DataTypes.CHAR,
     birthdate: Sequelize.DATE
 }, {

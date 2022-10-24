@@ -3,7 +3,7 @@ const sequelize = require("../../connection.js");
 
 class StudentContact extends Model {}
 StudentContact.init({
-    studentPhone: DataTypes.INTEGER,
+    studentPhone: DataTypes.STRING,
     studenEmail: DataTypes.STRING,
     facebook: DataTypes.STRING,
     twitter: DataTypes.STRING,

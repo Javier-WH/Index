@@ -5,10 +5,10 @@ class StudentTutor extends Model {}
 StudentTutor.init({
     tutorName: DataTypes.STRING,
     tutorLastName: DataTypes.STRING,
-    tutorCi: DataTypes.INTEGER,
+    tutorCi: DataTypes.STRING,
     tutorNationality: DataTypes.CHAR,
     tutorInstruction: DataTypes.INTEGER,
-    tutorPhone:DataTypes.INTEGER,
+    tutorPhone:DataTypes.STRING,
     tutorEmail: DataTypes.STRING,
     tutorAddress: DataTypes.STRING,
     tutorPatriaCode: DataTypes.STRING,

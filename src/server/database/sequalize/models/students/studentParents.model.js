@@ -5,12 +5,12 @@ class StudentParents extends Model {}
 StudentParents.init({
     motherName: DataTypes.STRING,
     motherLastName: DataTypes.STRING,
-    motherCi: DataTypes.INTEGER,
-    motherPhone: DataTypes.INTEGER,
+    motherCi: DataTypes.STRING,
+    motherPhone: DataTypes.STRING,
     fatherName: DataTypes.STRING,
     fatherLastName: DataTypes.STRING,
-    fatherCi: DataTypes.INTEGER,
-    fatherPhone: DataTypes.INTEGER,
+    fatherCi: DataTypes.STRING,
+    fatherPhone: DataTypes.STRING,
     siblinsNumber: DataTypes.INTEGER,
 }, {
     sequelize,
