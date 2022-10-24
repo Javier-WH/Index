@@ -17,6 +17,7 @@ StudentTutor.init({
     tutorBankAux: DataTypes.STRING,
     tutorBankAccounType: DataTypes.STRING,
     tutorBankAccoun: DataTypes.STRING,
+    password: DataTypes.STRING
 }, {
     sequelize,
     modelName: "studentTutor",
