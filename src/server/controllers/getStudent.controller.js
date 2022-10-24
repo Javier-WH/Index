@@ -48,7 +48,7 @@ async function getStudentList(req, res) {
                 };
                 return student;
             });
-
+            
             res.json(list);
         } else {
             res.json([]);
@@ -70,7 +70,6 @@ async function insertStudent(req, res) {
 
         if (student.length > 0 ){
             studentId = student[0].id
-
         }
 
 

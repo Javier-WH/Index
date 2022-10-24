@@ -22,7 +22,8 @@ function saveGrades(req, res) {
                 where: {
                     studentId: id,
                     section,
-                    schoolYear
+                    schoolYear,
+                    period: 2022
                 }
             });
             let oldSubjects = query[0].subjects;
@@ -38,10 +39,10 @@ function saveGrades(req, res) {
             if (change.l3) {
                 oldSubject.lap3 = change.l3
             }
-            if (change.def) {
-                oldSubject.def = change.def
-            }
+          
 
+            oldSubject.def = (( Number.parseFloat(oldSubject.lap1) + Number.parseFloat(oldSubject.lap2) +  Number.parseFloat(oldSubject.lap3)) / 3).toFixed(2);
+           
             await Grades.update({
                 subjects: oldSubjects
             }, {

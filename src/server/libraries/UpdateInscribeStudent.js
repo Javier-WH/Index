@@ -1,5 +1,4 @@
 const sequelize = require("../database/sequalize/connection.js");
-const StudentList = require("../database/sequalize/models/students/studentList.model.js");
 const Grades = require("../database/sequalize/models/students/grades.model.js");
 const Address = require("../database/sequalize/models/students/studentAddress.model.js");
 const Documents = require("../database/sequalize/models/students/studentDocuments.model.js");
@@ -9,38 +8,59 @@ const Medical = require("../database/sequalize/models/students/studentMedicalInf
 const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
 const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
 const { getPensum } = require("../controllers/pensum.controller.js");
+const Failed = require("../database/sequalize/models/students/failedStudents.js");
 
-async function updateStudent(studentData, tutorCi, repite, studentId){
+
+async function updateStudent(studentData, tutorCi, repite, studentId) {
     const insertStudent = await sequelize.transaction();
 
-    let subejects = async ()=>{
-        if( repite.code === 1){
+    let subejects = async () => {
+        if (repite.code === 1) {
             return await getPensum(studentData.grade);
         }
-///////////////////////bug
-        if(repite.code === 2){
-            let pensum = await getPensum(studentData.grade);
-       
-            console.log("se deben añadir las nuevas materias")
 
-            return pensum;
+        if (repite.code === 2) {
+            let subs = repite.extraSubjects;
+
+            let failedSubjects = {};
+
+            subs.map(subjec => {
+                failedSubjects[subjec] = {
+                    def: 0,
+                    lap1: 0,
+                    lap2: 0,
+                    lap3: 0
+                }
+            })
+
+            await Failed.create({
+                period: studentData.period,
+                section: studentData.seccion,
+                schoolYear: repite.code === 3 ? studentData.grade - 1 : studentData.grade,
+                subjects: failedSubjects,
+                studentId
+            }, { transaction: insertStudent });
+    
+            
+            return await getPensum(studentData.grade);
         }
 
-        if(repite.code === 3){
+        if (repite.code === 3) {
             return await getPensum(repite.grade);
         }
 
     }
-    
 
-    
+
+
     try {
 
-        
+
+
         await Grades.create({
             period: studentData.period,
             section: studentData.seccion,
-            schoolYear: repite.code === 3 ? studentData.grade -1 : studentData.grade,
+            schoolYear: repite.code === 3 ? studentData.grade - 1 : studentData.grade,
             subjects: await subejects(),
             failded: repite.code === 1 ? false : true,
             studentId
@@ -62,8 +82,8 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             municipio: studentData.municipio,
             homeState: studentData.homeState
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         })
 
         await Documents.update({
@@ -77,8 +97,8 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             canainaRecipe: studentData.canainaRecipe,
             sixGrade: studentData.sixGrade,
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         })
 
 
@@ -89,10 +109,10 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             twitter: studentData.twitter,
             tikTok: studentData.tikTok,
             instagram: studentData.instagram,
-    
+
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         })
 
 
@@ -106,10 +126,10 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             fatherCi: studentData.fatherCi,
             fatherPhone: studentData.fatherPhone,
             siblinsNumber: studentData.siblinsNumber,
-        
+
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         })
 
         await Medical.create({
@@ -130,8 +150,8 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             foodAllegies: studentData.foodAllegies,
 
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         });
 
 
@@ -149,10 +169,10 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
             becaName: studentData.becaName,
             studentPatriaCode: studentData.studentPatriaCode,
             studentPatriaSerial: studentData.studentPatriaSerial,
-            
+
         }, {
-            where: {studentId},
-            transaction: insertStudent 
+            where: { studentId },
+            transaction: insertStudent
         })
 
 
@@ -180,10 +200,10 @@ async function updateStudent(studentData, tutorCi, repite, studentId){
         })
 
         await insertStudent.commit();
-        return {message: "OK"}
+        return { message: "OK" }
 
     } catch (error) {
-        
+
         console.log(error)
         await insertStudent.rollback();
         return { error: "Ha ocurrido un error, no se ha actualizado al estudiante" }
