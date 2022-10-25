@@ -18,7 +18,8 @@ app.use(require("./routes/teacherSubjects.routes.js"));
 app.use(require("./routes/studentGrades.routes.js"));
 app.use(require("./routes/user.routes.js"));
 app.use(require("./routes/pensum.routes.js"));
-app.use(require("./routes/tutor.routes.js"))
+app.use(require("./routes/tutor.routes.js"));
+app.use(require("./routes/teacher.routes.js"))
 
 
 require("./database/sequalize/relations/relations.js");

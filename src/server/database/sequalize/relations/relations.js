@@ -48,5 +48,5 @@ Failed.belongsTo(student, {as:"student"});
 
 
 ///teachers
-teachers.hasOne(teacherSubjects);
-teacherSubjects.belongsTo(teachers);
+teachers.hasOne(teacherSubjects, {as: "subjects", foreignKey:"teacherId", onDelete:"CASCADE"});
+teacherSubjects.belongsTo(teachers, {as:"teacher"});
