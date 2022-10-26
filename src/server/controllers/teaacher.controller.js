@@ -48,25 +48,6 @@ async function setTeacherData(req, res) {
 
 /*
 *Inscribe un profesor
-
-{
-  ci: '123',
-  names: 'Juan',
-  lastNames: 'Perez',
-  gender: 'm',
-  birthdate: '2000-01-01',
-  phone: '555',
-  email: 'Juan@correoFalso.com',
-  admin: true,
-  subjects: [
-    'Castellano 1A',
-    'Inglés y otras lenguas extranjeras 1A',
-    'Castellano 1B',
-    'Inglés y otras lenguas extranjeras 1B',
-    'Física 5C'
-  ]
-}
-
 */
 
 async function insertTeacher(req, res) {
@@ -116,4 +97,55 @@ async function insertTeacher(req, res) {
 
 }
 
-module.exports = { getTeacherData, setTeacherData, insertTeacher }
+async function getTeacherByCi(req, res){
+    let ci = req.query.ci;
+
+    try {
+        let getTeacerTransaction = await sequelize.transaction();
+
+
+        let teacherList = await Teachers.findAll({
+            where:{
+                ci
+            },
+            transaction: getTeacerTransaction
+        })
+
+        if(teacherList.length <= 0){
+            res.status(404).json({error:"La cédula suministrada no está registrada"});
+            return
+        }
+        
+        let subjects = await Subjects.findAll({
+            where:{
+                teacherId: teacherList[0].id
+            },
+            transaction: getTeacerTransaction
+        })
+
+        let objSub = [];
+        if(subjects.length > 0){
+            let rawSubjects = subjects[0].subjects[0];
+            
+            Object.keys(rawSubjects).map(r=>{
+                rawSubjects[r].map(sec=>{
+                    objSub.push(`${r} ${sec}`)
+                })
+            })
+        }
+            
+        let data = teacherList[0].dataValues;
+        data.subject = objSub;
+
+        getTeacerTransaction.commit();
+        res.status(200).json(data)
+    } catch (error) {
+        console.log(error)
+        getTeacerTransaction.rollback();
+        res.status(500).json({error: "Ha ocurrido un error al momento de obtener al profesor"})
+    }
+
+
+}
+
+module.exports = { getTeacherData, setTeacherData, insertTeacher, getTeacherByCi }

@@ -56,7 +56,9 @@ async function checkPensum() {
 
         await checkPensumTrasaction.commit();
     } catch (error) {
-        console.log(error)
+       setTimeout(() => {
+        checkPensum();
+       }, 2000);
         await checkPensumTrasaction.rollback();
     }
 
