@@ -54,40 +54,84 @@ async function insertTeacher(req, res) {
     const teacherTransaction = await sequelize.transaction();
     try {
         let { ci, names, lastNames, gender, birthdate, phone, email, admin, subjects } = req.body;
-       
-        let insertedTeacher = await Teachers.create({
-            names,
-            lastNames,
-            ci,
-            gender,
-            birthdate,
-            phone,
-            email,
-            admin
-        }, {transaction: teacherTransaction })
 
-        let teacherId = insertedTeacher.dataValues.id
-
+        //obtiene las materias del profesor enviadas desde el cliente
         let obj = {};
-        subjects.map(item=>{
-            let subject = item.substring(0, item.length -3)
-            let grade = item.substring(item.length -3)
+        subjects.map(item => {
+            let subject = item.substring(0, item.length - 3)
+            let grade = item.substring(item.length - 3)
 
-            if(obj[subject] === undefined){
+            if (obj[subject] === undefined) {
                 obj[subject] = [];
             }
 
             obj[subject].push(grade)
         })
 
-        await Subjects.create({
-            teacherId,
-            subjects: [obj]
-        }, {transaction: teacherTransaction })
 
-        
+
+        ///revisa si el profesor existe
+        let teacherList = await Teachers.findAll({
+            where: {
+                ci
+            },
+            transaction: teacherTransaction
+        })
+
+        //si existe actualiza
+        if (teacherList.length > 0) {
+            let teacherId = teacherList[0].id
+
+            await Teachers.update({
+                names,
+                lastNames,
+                ci,
+                gender,
+                birthdate,
+                phone,
+                email,
+                admin
+            }, {
+                where: {
+                    id:teacherId
+                },
+                transaction: teacherTransaction
+            })
+
+            await Subjects.update({
+                subjects: [obj]
+            }, {
+                where: { teacherId },
+                transaction: teacherTransaction
+            })
+
+        } else {//si no existe crea uno nuevo
+
+            let insertedTeacher = await Teachers.create({
+                names,
+                lastNames,
+                ci,
+                gender,
+                birthdate,
+                phone,
+                email,
+                admin
+            }, { transaction: teacherTransaction })
+
+            let teacherId = insertedTeacher.dataValues.id
+
+
+            await Subjects.create({
+                teacherId,
+                subjects: [obj]
+            }, { transaction: teacherTransaction })
+
+        }
+
         teacherTransaction.commit()
         res.status(200).json({ message: "OK" })
+
+
     } catch (error) {
         teacherTransaction.rollback();
         console.log(error);
@@ -97,7 +141,7 @@ async function insertTeacher(req, res) {
 
 }
 
-async function getTeacherByCi(req, res){
+async function getTeacherByCi(req, res) {
     let ci = req.query.ci;
 
     try {
@@ -105,35 +149,35 @@ async function getTeacherByCi(req, res){
 
 
         let teacherList = await Teachers.findAll({
-            where:{
+            where: {
                 ci
             },
             transaction: getTeacerTransaction
         })
 
-        if(teacherList.length <= 0){
-            res.status(404).json({error:"La cédula suministrada no está registrada"});
+        if (teacherList.length <= 0) {
+            res.status(404).json({ error: "La cédula suministrada no está registrada" });
             return
         }
-        
+
         let subjects = await Subjects.findAll({
-            where:{
+            where: {
                 teacherId: teacherList[0].id
             },
             transaction: getTeacerTransaction
         })
 
         let objSub = [];
-        if(subjects.length > 0){
+        if (subjects.length > 0) {
             let rawSubjects = subjects[0].subjects[0];
-            
-            Object.keys(rawSubjects).map(r=>{
-                rawSubjects[r].map(sec=>{
+
+            Object.keys(rawSubjects).map(r => {
+                rawSubjects[r].map(sec => {
                     objSub.push(`${r} ${sec}`)
                 })
             })
         }
-            
+
         let data = teacherList[0].dataValues;
         data.subject = objSub;
 
@@ -142,7 +186,7 @@ async function getTeacherByCi(req, res){
     } catch (error) {
         console.log(error)
         getTeacerTransaction.rollback();
-        res.status(500).json({error: "Ha ocurrido un error al momento de obtener al profesor"})
+        res.status(500).json({ error: "Ha ocurrido un error al momento de obtener al profesor" })
     }
 
 
