@@ -188,8 +188,6 @@ async function getTeacherByCi(req, res) {
         getTeacerTransaction.rollback();
         res.status(500).json({ error: "Ha ocurrido un error al momento de obtener al profesor" })
     }
-
-
 }
 
 module.exports = { getTeacherData, setTeacherData, insertTeacher, getTeacherByCi }
