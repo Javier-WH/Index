@@ -30,6 +30,7 @@ app.listen(process.env.PORT, process.env.IP, error=>{
         return
     }
     rutines();
+    console.log(`*********************************************************************************************************************************************************************`);
     console.log(`El servidor se ha iniciado en -> ${IP()}:${process.env.PORT} `);
 
 })

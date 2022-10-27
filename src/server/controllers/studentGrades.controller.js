@@ -13,10 +13,16 @@ function saveGrades(req, res) {
         changesList.map(async change => {
 
             let id = change.id;
-            let subject = change.session.split(" ")[0];
+
+            let seccionData = change.session.replaceAll("  ", " ");
+            let schoolYear = seccionData[seccionData.length - 2]
+            let section = seccionData[seccionData.length - 1]
+            let subject = seccionData.substring(0, seccionData.length - 3)
+                 
+           /* let subject = change.session.split(" ")[0];
             let section = change.session.split(" ")[1][1];
             let schoolYear = change.session.split(" ")[1][0];
-
+            */
 
             let query = await Grades.findAll({
                 where: {
@@ -39,10 +45,10 @@ function saveGrades(req, res) {
             if (change.l3) {
                 oldSubject.lap3 = change.l3
             }
-          
 
-            oldSubject.def = (( Number.parseFloat(oldSubject.lap1) + Number.parseFloat(oldSubject.lap2) +  Number.parseFloat(oldSubject.lap3)) / 3).toFixed(2);
-           
+
+            oldSubject.def = ((Number.parseFloat(oldSubject.lap1) + Number.parseFloat(oldSubject.lap2) + Number.parseFloat(oldSubject.lap3)) / 3).toFixed(2);
+
             await Grades.update({
                 subjects: oldSubjects
             }, {
@@ -58,6 +64,7 @@ function saveGrades(req, res) {
 
         res.json({ message: "OK" })
     } catch (error) {
+        console.log(error)
         res.json({ error: "Ocurrió un error al intentar actualizar las notas" })
     }
 }

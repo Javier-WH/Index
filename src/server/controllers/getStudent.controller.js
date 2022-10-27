@@ -20,10 +20,13 @@ function getApp(req, res) {
 
 async function getStudentList(req, res) {
     try {
-        let seccionData = req.query.seccion.split(" ");
-        let schoolYear = seccionData[1][0];
-        let seccion = seccionData[1][1];
-
+   
+        ///esto corrige un bug que se genera en un lugar indeterminado, donde se agrega un espacio adicional al valor de la seccion
+        let seccionData = req.query.seccion.replaceAll("  ", " ");
+        let schoolYear = seccionData[seccionData.length -2]
+        let seccion = seccionData[seccionData.length -1]
+      
+    
         let rawList = await StudentList.findAll({
             include: {
                 model: Grades,
@@ -44,16 +47,17 @@ async function getStudentList(req, res) {
                     lastNames: register.lastNames,
                     id: register.id,
                     photo: "default",
+                    gender: register.gender,
                     subjects: register.grades[0].subjects
                 };
                 return student;
             });
-            
             res.json(list);
         } else {
             res.json([]);
         }
     } catch (error) {
+        console.log(error)
         res.status(500).json([]);
     }
 }
@@ -103,7 +107,7 @@ async function insertStudent(req, res) {
 
         //revisa si tiene notas apalzadas
         let failed = await checkFailed(studentData.ci, studentData.grade);
-        //console.log(failed)
+       
 
         //revisa si el estudiante ya existe
 

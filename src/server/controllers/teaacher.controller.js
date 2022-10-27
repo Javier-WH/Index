@@ -53,20 +53,23 @@ async function setTeacherData(req, res) {
 async function insertTeacher(req, res) {
     const teacherTransaction = await sequelize.transaction();
     try {
-        let { ci, names, lastNames, gender, birthdate, phone, email, admin, subjects } = req.body;
+        let { ci, names, lastNames, gender, birthdate, phone, email, admin, subjects, user, password } = req.body;
 
         //obtiene las materias del profesor enviadas desde el cliente
+
         let obj = {};
-        subjects.map(item => {
-            let subject = item.substring(0, item.length - 3)
-            let grade = item.substring(item.length - 3)
-
-            if (obj[subject] === undefined) {
-                obj[subject] = [];
-            }
-
-            obj[subject].push(grade)
-        })
+        if(subjects !== undefined){
+            subjects.map(item => {
+                let subject = item.substring(0, item.length - 3)
+                let grade = item.substring(item.length - 3)
+                
+                if (obj[subject] === undefined) {
+                    obj[subject] = [];
+                }
+                
+                obj[subject].push(grade)
+            })
+        }
 
 
 
@@ -80,17 +83,20 @@ async function insertTeacher(req, res) {
 
         //si existe actualiza
         if (teacherList.length > 0) {
+            let tch = teacherList[0];
             let teacherId = teacherList[0].id
-
+            
             await Teachers.update({
-                names,
-                lastNames,
-                ci,
-                gender,
-                birthdate,
-                phone,
-                email,
-                admin
+                names: names === undefined ? tch.names : names,
+                lastNames: lastNames === undefined ? tch.lastNames : lastNames,
+                ci: ci === undefined ? tch.ci : ci,
+                gender: gender === undefined ? tch.gender : gender,
+                birthdate: birthdate === undefined ? tch.birthdate : birthdate,
+                phone : phone === undefined ? tch.phone : phone,
+                email : email === undefined ? tch.email : email,
+                admin: admin === undefined ? tch.admin : admin,
+                user: user === undefined ? tch.user : user,
+                password: password === undefined ? tch.password : password
             }, {
                 where: {
                     id:teacherId
@@ -99,7 +105,7 @@ async function insertTeacher(req, res) {
             })
 
             await Subjects.update({
-                subjects: [obj]
+                subjects: subjects === undefined ? tch.subjects : [obj],
             }, {
                 where: { teacherId },
                 transaction: teacherTransaction
@@ -173,7 +179,7 @@ async function getTeacherByCi(req, res) {
 
             Object.keys(rawSubjects).map(r => {
                 rawSubjects[r].map(sec => {
-                    objSub.push(`${r} ${sec}`)
+                    objSub.push(`${r}${sec}`)
                 })
             })
         }
