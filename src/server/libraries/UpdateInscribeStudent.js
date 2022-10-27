@@ -132,7 +132,7 @@ async function updateStudent(studentData, tutorCi, repite, studentId) {
             transaction: insertStudent
         })
 
-        await Medical.create({
+        await Medical.update({
             weight: studentData.weight,
             height: studentData.height,
             chessSize: studentData.chessSize,
@@ -155,7 +155,7 @@ async function updateStudent(studentData, tutorCi, repite, studentId) {
         });
 
 
-        await Resourses.create({
+        await Resourses.update({
             houseType: studentData.houseType,
             houseCondition: studentData.houseCondition,
             emergencyName: studentData.emergencyName,

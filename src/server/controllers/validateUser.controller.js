@@ -1,18 +1,23 @@
-const teachers = require("../database/sequalize/models/teachers/teachers.model")
-
+const teachers = require("../database/sequalize/models/teachers/teachers.model");
+const Tutor = require("../database/sequalize/models/students/studentTutor.model");
 async function validateUser(req, res) {
     try {
     const { user, pass, type } = req.body;
        // console.log(req.body)
         //esto determina si se valida un profesor, administrador o representante
         let storagedUser = [];
+    
         if (type === 0) {
             storagedUser = await teachers.findAll({ where: { user } });
+        }
+        if(type === 1){
+            storagedUser = await Tutor.findAll({where:{tutorCi:user}});
         }  
         if(type === 2){
             storagedUser = await teachers.findAll({ where: { user , admin: 1 } });
         }
         
+    
         
         if (storagedUser.length > 0) {
             let userFounded = storagedUser[0];
@@ -25,6 +30,10 @@ async function validateUser(req, res) {
                     req.session.teachersID = userFounded.id;
                     res.json({ code: 1 });
                 } 
+                if(type === 1){
+                    req.session.tutorID = userFounded.id;
+                    res.json({code: 2 });
+                }
                 if(type === 2){
                     req.session.adminsID = userFounded.id;
                     res.json({ code: 3 });
