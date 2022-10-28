@@ -1,14 +1,27 @@
 const Grades = require("../database/sequalize/models/students/grades.model.js");
+const Config = require("../database/sequalize/models/config/config.model");
 
-function saveGrades(req, res) {
+
+async function saveGrades(req, res) {
 
     try {
+
+        let askCofig = await Config.findAll();
+        let config = askCofig[0];
+        let allowedLap1 = config.lap1;
+        let allowedLap2 = config.lap2;
+        let allowedLap3 = config.lap3;
+        let allowedEdit = config.edit;
+
+
+        ///////////////////////
         let data = req.body;
         let keys = Object.keys(data);
 
         let changesList = keys.map(key => {
             return data[key]
         })
+
 
         changesList.map(async change => {
 
@@ -18,31 +31,27 @@ function saveGrades(req, res) {
             let schoolYear = seccionData[seccionData.length - 2]
             let section = seccionData[seccionData.length - 1]
             let subject = seccionData.substring(0, seccionData.length - 3)
-                 
-           /* let subject = change.session.split(" ")[0];
-            let section = change.session.split(" ")[1][1];
-            let schoolYear = change.session.split(" ")[1][0];
-            */
 
             let query = await Grades.findAll({
                 where: {
                     studentId: id,
                     section,
                     schoolYear,
-                    period: 2022
+                    period: config.period
                 }
             });
             let oldSubjects = query[0].subjects;
 
             let oldSubject = oldSubjects[subject]
 
-            if (change.l1) {
+
+            if (change.l1 && allowedLap1) {
                 oldSubject.lap1 = change.l1
             }
-            if (change.l2) {
+            if (change.l2 && allowedLap2) {
                 oldSubject.lap2 = change.l2
             }
-            if (change.l3) {
+            if (change.l3 && allowedLap3) {
                 oldSubject.lap3 = change.l3
             }
 
@@ -62,10 +71,11 @@ function saveGrades(req, res) {
 
         })
 
-        res.json({ message: "OK" })
+ 
+        res.json({message: "OK"})
     } catch (error) {
         console.log(error)
-        res.json({ error: "Ocurrió un error al intentar actualizar las notas" })
+        res.json({ error})
     }
 }
 

@@ -1,10 +1,12 @@
-const Pensum = require("../database/sequalize/models/config/pensum.model")
+const Pensum = require("../database/sequalize/models/config/pensum.model");
+const Config = require("../database/sequalize/models/config/config.model");
 const sequelize = require("../database/sequalize/connection.js")
 
 
 async function routines() {
 
     checkPensum();
+    checkConfig();
 }
 
 
@@ -61,11 +63,52 @@ async function checkPensum() {
        }, 2000);
         await checkPensumTrasaction.rollback();
     }
+}
+
+//////////////////////////////////////
+
+async function checkConfig(){
+
+    const checkConfigTrasaction = await sequelize.transaction();
+
+    try {
+        let config = await Config.findAll({transaction:checkConfigTrasaction });
+
+        if(config.length <=0){
+            Config.destroy({
+                where: {},
+                transaction: checkConfigTrasaction
+            });
+
+            await Config.create({
+                lap1: false,
+                lap2: false,
+                lap3:false,
+                edit:false,
+                period: 2022,
+                maxSeccionCap: 30,
+                maxGradeCap: 20
+            }, {
+                transaction: checkConfigTrasaction
+            })
+
+            console.log("Se ha creado una configuracion por defecto")
+        }
+
+
+        checkConfigTrasaction.commit();
+    } catch (error) {
+        console.log(error)
+        setTimeout(() => {
+            checkConfig();
+           }, 2000);
+
+        checkConfigTrasaction.rollback()
+    }
+
 
 
 }
-
-
 
 
 

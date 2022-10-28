@@ -9,7 +9,6 @@ const Parents = require("../database/sequalize/models/students/studentParents.mo
 const Medical = require("../database/sequalize/models/students/studentMedicalInfo.model.js");
 const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
 const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
-const Photo = require("../database/sequalize/models/students/studentPortrait.model.js")
 const newStudent = require("../libraries/insertNewStudent.js");
 const updateStudent = require("../libraries/UpdateInscribeStudent.js");
 const { checkFailed } = require("../libraries/checkFailSubjects.js");
