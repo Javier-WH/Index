@@ -13,6 +13,8 @@ const Photo = require("../database/sequalize/models/students/studentPortrait.mod
 const newStudent = require("../libraries/insertNewStudent.js");
 const updateStudent = require("../libraries/UpdateInscribeStudent.js");
 const { checkFailed } = require("../libraries/checkFailSubjects.js");
+const fs = require('fs');
+
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
@@ -236,44 +238,40 @@ async function getStudent(req, res) {
 
 async function getPhoto(req, res){
 
-}
+    let id = req.query.id;
 
-async function setPhoto(req, res){
-    
+    let filePath = path.join(__dirname, `../utility/files/${id}.jpg`);
+
     try {
-        const photoTransaction = await sequelize.transaction();
         
-        let studentId = req.body.id;
-        let photo = req.body.photo;
-        
-        let exist = Photo.findAll({
-            where:{
-                studentId,
-                transaction: photoTransaction
-            }
-        })
-
-        if(exist > 0){
-            await Photo.update({
-                photo
-            },{
-                where:{
-                    studentId
-                },
-                transaction: photoTransaction
-            })
+        if(fs.existsSync(filePath)){
+           res.status(200).sendFile(filePath);
         }else{
-            await Photo.create({studentId, photo }, {transaction: photoTransaction})
+            res.status(404).send("")
         }
 
-        photoTransaction.commit();
-        res.status(200).json({message:"OK"})
-        
     } catch (error) {
-        photoTransaction.rollback();
-        console.log(error)
-        res.status(500).json({error: "Ha ocurido un error al cargar la foto"})
+        
     }
+}
+
+
+async function setPhoto(req, res){
+  try {
+      let id = req.body.studentId;
+      let fileName = req.body.fileName;
+  
+      let oldPath = path.join(__dirname, `../utility/files/${fileName}`)
+      let newPath = path.join(__dirname, `../utility/files/${id}.jpg`)
+  
+      fs.rename(oldPath, newPath, () => {
+          console.log(`Foto actualizada-> ${newPath}`)
+      });
+  
+      res.status(200).json({message: "OK"})
+  } catch (error) {
+    res.status(500).json({error: "No se ha pudo actualizar la foto"})
+  }
 
 }
 

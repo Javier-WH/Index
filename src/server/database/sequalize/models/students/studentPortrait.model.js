@@ -3,7 +3,7 @@ const sequelize = require("../../connection.js");
 
 class Portraits extends Model {}
 Portraits.init({
-    photo: DataTypes.TEXT
+    photo: DataTypes.STRING
 }, {
     sequelize,
     modelName: "portraits",
