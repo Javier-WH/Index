@@ -9,7 +9,7 @@ const Parents = require("../database/sequalize/models/students/studentParents.mo
 const Medical = require("../database/sequalize/models/students/studentMedicalInfo.model.js");
 const Resourses = require("../database/sequalize/models/students/studentResourses.model.js");
 const Tutors = require("../database/sequalize/models/students/studentTutor.model.js");
-
+const Photo = require("../database/sequalize/models/students/studentPortrait.model.js")
 const newStudent = require("../libraries/insertNewStudent.js");
 const updateStudent = require("../libraries/UpdateInscribeStudent.js");
 const { checkFailed } = require("../libraries/checkFailSubjects.js");
@@ -232,14 +232,58 @@ async function getStudent(req, res) {
     }
 }
 
+//////////////////////
 
+async function getPhoto(req, res){
 
+}
+
+async function setPhoto(req, res){
+    
+    try {
+        const photoTransaction = await sequelize.transaction();
+        
+        let studentId = req.body.id;
+        let photo = req.body.photo;
+        
+        let exist = Photo.findAll({
+            where:{
+                studentId,
+                transaction: photoTransaction
+            }
+        })
+
+        if(exist > 0){
+            await Photo.update({
+                photo
+            },{
+                where:{
+                    studentId
+                },
+                transaction: photoTransaction
+            })
+        }else{
+            await Photo.create({studentId, photo }, {transaction: photoTransaction})
+        }
+
+        photoTransaction.commit();
+        res.status(200).json({message:"OK"})
+        
+    } catch (error) {
+        photoTransaction.rollback();
+        console.log(error)
+        res.status(500).json({error: "Ha ocurido un error al cargar la foto"})
+    }
+
+}
 
 module.exports = {
     getApp,
     getStudentList,
     insertStudent,
-    getStudent
+    getStudent,
+    getPhoto,
+    setPhoto
 }
 
 /*
