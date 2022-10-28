@@ -7,7 +7,8 @@ const studentDocuments = require("../models/students/studentDocuments.model.js")
 const studentMedicalInfo = require("../models/students/studentMedicalInfo.model.js");
 const StudentParents = require("../models/students/studentParents.model.js");
 const studentResourses = require("../models/students/studentResourses.model.js");
-const Failed = require("../models/students/failedStudents.js")
+const Failed = require("../models/students/failedStudents.js");
+const Portraits = require("../models/students/studentPortrait.model.js");
 
 //////
 const teacherSubjects = require("../models/teachers/subjects.model.js");
@@ -41,7 +42,9 @@ studentResourses.belongsTo(student, {as:"student"});
 //
 student.hasMany(Failed, {as: "failed", foreignKey:"studentId", onDelete:"CASCADE"});
 Failed.belongsTo(student, {as:"student"});
-
+//
+student.hasOne(Portraits, {as: "photo", foreignKey:"studentId", onDelete:"CASCADE"});
+Portraits.belongsTo(student, {as:"student"});
 
 
 

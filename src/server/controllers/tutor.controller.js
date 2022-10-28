@@ -103,6 +103,11 @@ async function getTutorPerfil(req, res){
         let stdGrades = studens.map(std=>{
             let grd = grades.filter(gr => std.id === gr.studentId)
             let obj = std;
+            obj.dataValues.studentId = grd[0].studentId;
+            obj.dataValues.seccion = grd[0].section;
+            obj.dataValues.schoolYear = grd[0]. schoolYear;
+            obj.dataValues.period = grd[0].period;
+            obj.dataValues.failded = grd[0].failded;
             obj.dataValues.subjects = grd[grd.length - 1].subjects;
             return obj;
         })
