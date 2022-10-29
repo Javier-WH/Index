@@ -46,12 +46,21 @@ async function saveGrades(req, res) {
 
 
             if (change.l1 && allowedLap1) {
+                if(oldSubject.lap1 > 0 && !allowedEdit){
+                    return
+                }
                 oldSubject.lap1 = change.l1
             }
             if (change.l2 && allowedLap2) {
+                if(oldSubject.lap2 > 0 && !allowedEdit){
+                    return
+                }
                 oldSubject.lap2 = change.l2
             }
             if (change.l3 && allowedLap3) {
+                if(oldSubject.lap3 > 0 && !allowedEdit){
+                    return
+                }
                 oldSubject.lap3 = change.l3
             }
 

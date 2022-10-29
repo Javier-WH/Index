@@ -2,7 +2,7 @@ const Config = require("../database/sequalize/models/config/config.model.js")
 
 async function getConfig(req, res) {
 
-    if (req.session.adminsID === undefined) {
+    if (req.session.adminsID === undefined &&  req.session.teachersID === undefined) {
         res.status(403).send("Acceso denegado");
         return
     }
