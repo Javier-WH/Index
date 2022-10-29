@@ -10,6 +10,7 @@ Config.init({
     period : DataTypes.INTEGER,
     maxSeccionCap : DataTypes.INTEGER,
     maxGradeCap : DataTypes.INTEGER,
+    institutionName: DataTypes.STRING,
 }, {
     sequelize,
     modelName: "config",

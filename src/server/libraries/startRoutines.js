@@ -87,7 +87,8 @@ async function checkConfig(){
                 edit:false,
                 period: 2022,
                 maxSeccionCap: 30,
-                maxGradeCap: 20
+                maxGradeCap: 20,
+                institutionName: "No se ha asignado un nombre a la institución"
             }, {
                 transaction: checkConfigTrasaction
             })
@@ -98,7 +99,7 @@ async function checkConfig(){
 
         checkConfigTrasaction.commit();
     } catch (error) {
-        console.log(error)
+        
         setTimeout(() => {
             checkConfig();
            }, 2000);
