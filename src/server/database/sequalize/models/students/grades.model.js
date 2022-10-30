@@ -7,7 +7,8 @@ Grades.init({
     period: DataTypes.INTEGER,
     section: DataTypes.CHAR,
     schoolYear: DataTypes.INTEGER, //grade
-    failded: DataTypes.BOOLEAN
+    failded: DataTypes.BOOLEAN,
+    status: DataTypes.BOOLEAN //inscrito / no inscrito
 }, {
     sequelize,
     modelName: "grades",

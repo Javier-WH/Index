@@ -21,13 +21,13 @@ function getApp(req, res) {
 
 async function getStudentList(req, res) {
     try {
-   
+
         ///esto corrige un bug que se genera en un lugar indeterminado, donde se agrega un espacio adicional al valor de la seccion
         let seccionData = req.query.seccion.replaceAll("  ", " ");
-        let schoolYear = seccionData[seccionData.length -2]
-        let seccion = seccionData[seccionData.length -1]
-      
-    
+        let schoolYear = seccionData[seccionData.length - 2]
+        let seccion = seccionData[seccionData.length - 1]
+
+
         let rawList = await StudentList.findAll({
             include: {
                 model: Grades,
@@ -35,7 +35,8 @@ async function getStudentList(req, res) {
                 where: {
                     period: 2022,
                     section: seccion,
-                    schoolYear
+                    schoolYear,
+                    status: true
                 }
             }
         })
@@ -63,6 +64,183 @@ async function getStudentList(req, res) {
     }
 }
 ///////////////
+
+async function inscribeStudent(req, res) {
+    const updateStudentTransacction = await sequelize.transaction();
+    try {
+    
+        let data = req.body;
+
+        let existSTD = await StudentList.findAll({
+            where: {
+                ci: data.ci
+            },
+            transaction: updateStudentTransacction
+        })
+
+        if (existSTD.length <= 0) {
+            res.status(404).json({ error: "El estudiante no está inscrito" });
+            return
+        }
+        let studentId = existSTD[0].id
+
+        await StudentList.update({
+            names: data.names,
+            lastNames: data.lastNames,
+            ci: data.ci,
+            gender: data.gender,
+            birthdate: data.birthdate
+        }, {
+            where: {
+                id: studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+
+        await Grades.update({
+            status: true,
+            section: data.seccion,
+            period: data.period,
+            schoolYear: data.grade,
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+        await Address.update({
+            previusSchool: data.previusSchool,
+            birthCountry: data.birthCountry,
+            birthState: data.birthState,
+            birthPlace: data.birthPlace,
+            nationality: data.nationality,
+            married: data.married,
+            parroquia: data.parroquia,
+            town: data.town,
+            urbanizacion: data.urbanizacion,
+            stdAddres: data.stdAddres,
+            whoLive: data.whoLive,
+            municipio: data.municipio
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        });
+
+        await Documents.update({
+            birthAct: data.birthAct,
+            birthActCopy: data.birthActCopy,
+            _ci: data._ci,
+            photos: data.photos,
+            gradesCertificate: data.gradesCertificate,
+            gradesCertificateCopy: data.gradesCertificateCopy,
+            canainaRecipe: data.canainaRecipe,
+            sixGrade: data.sixGrade
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+        await Contacts.update({
+            studentPhone: data.studentPhone,
+            studenEmail: data.studenEmail,
+            facebook: data.facebook,
+            twitter: data.twitter,
+            tikTok: data.tikTok,
+            instagram: data.instagram
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+        await Parents.update({
+            motherName: data.motherName,
+            motherLastName: data.motherLastName,
+            motherCi: data.motherCi,
+            motherPhone: data.motherPhone,
+            fatherName: data.fatherName,
+            fatherLastName: data.fatherLastName,
+            fatherCi: data.fatherCi,
+            fatherPhone: data.fatherPhone,
+            siblinsNumber: data.siblinsNumber
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+
+        await Medical.update({
+            weight: data.weight,
+            height: data.height,
+            chessSize: data.chessSize,
+            pantsSize: data.pantsSize,
+            feetSize: data.feetSize,
+            gravidez: data.gravidez,
+            pregnancyTime: data.pregnancyTime,
+            influenza: data.influenza,
+            asma: data.asma,
+            diabetes: data.diabetes,
+            epilepsia: data.epilepsia,
+            tension: data.tension,
+            harth: data.harth,
+            drugAllegies: data.drugAllegies,
+            foodAllegies: data.foodAllegies
+
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+        await Resourses.update({
+            houseType: data.houseType,
+            houseCondition: data.houseCondition,
+            emergencyName: data.emergencyName,
+            emergencyPhone: data.emergencyPhone,
+            emergencyRelation: data.emergencyRelation,
+            canaima: data.canaima,
+            tablet: data.tablet,
+            smarthPhone: data.smarthPhone,
+            pc: data.pc,
+            becas: data.becas,
+            becaName : data.becaName,
+            studentPatriaCode: data.studentPatriaCode,
+            studentPatriaSerial: data.studentPatriaSerial
+        }, {
+            where: {
+                studentId
+            },
+            transaction: updateStudentTransacction
+        })
+
+        
+        await updateStudentTransacction.commit();
+        res.status(200).json({ message: "OK" })
+
+    } catch (error) {
+        console.log(error.message);
+        await updateStudentTransacction.rollback();
+    }
+
+
+
+}
+
+
+
+
+
+//////////
 async function insertStudent(req, res) {
 
     try {
@@ -71,9 +249,9 @@ async function insertStudent(req, res) {
 
         //revisa si el estudiante ya existe
         let studentId = 0;
-        let student = await StudentList.findAll({where:{ci:studentData.ci}})
+        let student = await StudentList.findAll({ where: { ci: studentData.ci } })
 
-        if (student.length > 0 ){
+        if (student.length > 0) {
             studentId = student[0].id
         }
 
@@ -93,14 +271,14 @@ async function insertStudent(req, res) {
 
         //Revisa que el estudiante no esté inscrito en el periodo escolar y el grado escoplar
         let AlreadyRegistered = await Grades.findAll({
-            where:{
+            where: {
                 studentId,
                 schoolYear: studentData.grade,
                 period: studentData.period
             }
         })
-        
-    
+
+
         if (AlreadyRegistered.length > 0) {
             res.json({ error: "El Estudiante ya ha sido registrado para este grado y periodo escolar" })
             return
@@ -108,23 +286,23 @@ async function insertStudent(req, res) {
 
         //revisa si tiene notas apalzadas
         let failed = await checkFailed(studentData.ci, studentData.grade);
-       
+
 
         //revisa si el estudiante ya existe
 
-        if(student.length > 0){
+        if (student.length > 0) {
             //actualiza al estudiante e inscribe un nuevo periodo escolar
             let updatedStudent = await updateStudent(studentData, tutorCi, failed, studentId);
-        
+
             res.status(200).json({ message: updatedStudent })
 
-        }else{
+        } else {
             //crea un nuevo registro del estudiante
             let insertedStudent = await newStudent(studentData, tutorId, tutorCi);
 
             res.status(200).json({ message: insertedStudent })
         }
-        
+
 
 
     } catch (error) {
@@ -215,7 +393,7 @@ async function getStudent(req, res) {
 
         let studentData = {
             ...student[0].dataValues,
-            ...grades[grades.length -1].dataValues,
+            ...grades[grades.length - 1].dataValues,
             ...address[0].dataValues,
             ...documents[0].dataValues,
             ...contacts[0].dataValues,
@@ -235,42 +413,42 @@ async function getStudent(req, res) {
 
 //////////////////////
 
-async function getPhoto(req, res){
+async function getPhoto(req, res) {
 
     let id = req.query.id;
 
     let filePath = path.join(__dirname, `../utility/files/${id}.jpg`);
 
     try {
-        
-        if(fs.existsSync(filePath)){
-           res.status(200).sendFile(filePath);
-        }else{
+
+        if (fs.existsSync(filePath)) {
+            res.status(200).sendFile(filePath);
+        } else {
             res.status(404).send("")
         }
 
     } catch (error) {
-        
+
     }
 }
 
 
-async function setPhoto(req, res){
-  try {
-      let id = req.body.studentId;
-      let fileName = req.body.fileName;
-  
-      let oldPath = path.join(__dirname, `../utility/files/${fileName}`)
-      let newPath = path.join(__dirname, `../utility/files/${id}.jpg`)
-  
-      fs.rename(oldPath, newPath, () => {
-          console.log(`Foto actualizada-> ${newPath}`)
-      });
-  
-      res.status(200).json({message: "OK"})
-  } catch (error) {
-    res.status(500).json({error: "No se ha pudo actualizar la foto"})
-  }
+async function setPhoto(req, res) {
+    try {
+        let id = req.body.studentId;
+        let fileName = req.body.fileName;
+
+        let oldPath = path.join(__dirname, `../utility/files/${fileName}`)
+        let newPath = path.join(__dirname, `../utility/files/${id}.jpg`)
+
+        fs.rename(oldPath, newPath, () => {
+            console.log(`Foto actualizada-> ${newPath}`)
+        });
+
+        res.status(200).json({ message: "OK" })
+    } catch (error) {
+        res.status(500).json({ error: "No se ha pudo actualizar la foto" })
+    }
 
 }
 
@@ -280,7 +458,8 @@ module.exports = {
     insertStudent,
     getStudent,
     getPhoto,
-    setPhoto
+    setPhoto,
+    inscribeStudent
 }
 
 /*

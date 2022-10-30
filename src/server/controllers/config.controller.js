@@ -22,9 +22,9 @@ async function getConfig(req, res) {
 
 async function setConfig(req, res) {
     try {
-        let { lap1, lap2, lap3, edit, period, maxGradeCap, maxSeccionCap, institutionName } = req.body;
+        let { lap1, lap2, lap3, edit, period, maxGradeCap, maxSeccionCap, institutionName, failedNumber } = req.body;
         await Config.update({
-            lap1, lap2, lap3, edit, period, maxGradeCap, maxSeccionCap, institutionName
+            lap1, lap2, lap3, edit, period, maxGradeCap, maxSeccionCap, institutionName, failedNumber
         }, {
             where: {
                 id: 1

@@ -1,5 +1,6 @@
 const Pensum = require("../database/sequalize/models/config/pensum.model");
 const Config = require("../database/sequalize/models/config/config.model");
+const Teachers = require("../database/sequalize/models/teachers/teachers.model")
 const sequelize = require("../database/sequalize/connection.js")
 
 
@@ -7,6 +8,7 @@ async function routines() {
 
     checkPensum();
     checkConfig();
+    checkAdmin();
 }
 
 
@@ -17,7 +19,7 @@ async function checkPensum() {
     try {
 
         let pensum = await Pensum.findAll({ transaction: checkPensumTrasaction });
-        
+
         if (pensum.length < 5) {
             Pensum.destroy({
                 where: {},
@@ -52,29 +54,29 @@ async function checkPensum() {
 
                 },
 
-            ],{transaction: checkPensumTrasaction })
+            ], { transaction: checkPensumTrasaction })
             console.log("Se ha restaurado el pensum de materias por defecto")
         }
 
         await checkPensumTrasaction.commit();
     } catch (error) {
-       setTimeout(() => {
-        checkPensum();
-       }, 2000);
+        setTimeout(() => {
+            checkPensum();
+        }, 2000);
         await checkPensumTrasaction.rollback();
     }
 }
 
 //////////////////////////////////////
 
-async function checkConfig(){
+async function checkConfig() {
 
     const checkConfigTrasaction = await sequelize.transaction();
 
     try {
-        let config = await Config.findAll({transaction:checkConfigTrasaction });
+        let config = await Config.findAll({ transaction: checkConfigTrasaction });
 
-        if(config.length <=0){
+        if (config.length <= 0) {
             Config.destroy({
                 where: {},
                 transaction: checkConfigTrasaction
@@ -83,12 +85,13 @@ async function checkConfig(){
             await Config.create({
                 lap1: false,
                 lap2: false,
-                lap3:false,
-                edit:false,
+                lap3: false,
+                edit: false,
                 period: 2022,
                 maxSeccionCap: 30,
                 maxGradeCap: 20,
-                institutionName: "No se ha asignado un nombre a la institución"
+                institutionName: "No se ha asignado un nombre a la institución",
+                failedNumber: 3
             }, {
                 transaction: checkConfigTrasaction
             })
@@ -99,17 +102,58 @@ async function checkConfig(){
 
         checkConfigTrasaction.commit();
     } catch (error) {
-        
+
         setTimeout(() => {
             checkConfig();
-           }, 2000);
+        }, 2000);
 
         checkConfigTrasaction.rollback()
     }
+}
 
+/////////////
+
+async function checkAdmin() {
+    const checkAdminTransaction = await sequelize.transaction();
+
+    try {
+
+        let exist = await Teachers.findAll({
+            where: {
+                admin: true,
+            },
+            transaction: checkAdminTransaction
+        })
+
+        if (exist.length > 0) {
+            return
+        }
+
+        await Teachers.create({
+            names: "Administrador",
+            lastNames: "General",
+            admin: true,
+            user: "admin",
+            password: "admin"
+        },{
+            transaction: checkAdminTransaction
+        })
+
+        checkAdminTransaction.commit();
+        console.log("Se ha creado un administrador por defecto")
+
+    } catch (error) {
+        checkAdminTransaction.rollback();
+        console.log(error.message)
+        setTimeout(() => {
+            checkAdmin();
+        }, 2000);
+
+    }
 
 
 }
+
 
 
 

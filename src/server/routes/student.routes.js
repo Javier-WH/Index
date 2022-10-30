@@ -2,7 +2,7 @@ const express = require("express");
 const Router = express.Router();
 const multer = require('multer');
 const path = require('path');
-const {getStudentList, insertStudent, getStudent, getPhoto, setPhoto} = require("../controllers/getStudent.controller.js");
+const {getStudentList, insertStudent, getStudent, getPhoto, setPhoto, inscribeStudent} = require("../controllers/getStudent.controller.js");
 
 
 const storage = multer.diskStorage({
@@ -21,5 +21,7 @@ Router.post("/student", express.json(), insertStudent);
 Router.get("/photo", express.urlencoded(), getPhoto);
 
 Router.post("/photo", multer({ storage, dest: "fileContainer" }).single("file"), setPhoto);
+
+Router.post("/inscribe", express.json(), inscribeStudent);
 
 module.exports = Router;
