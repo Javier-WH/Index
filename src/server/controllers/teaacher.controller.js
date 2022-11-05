@@ -196,4 +196,43 @@ async function getTeacherByCi(req, res) {
     }
 }
 
-module.exports = { getTeacherData, setTeacherData, insertTeacher, getTeacherByCi }
+
+/////
+
+async function getTeacherList(req, res){
+    try {
+        let list = await Teachers.findAll();
+
+        res.status(200).json(list);
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Ha ocurrido un error al consultar la lista de profesores"})
+    }
+}
+
+async function fireTeacher(req, res){
+
+    try {
+        let ci = req.body.ci;
+        let response = await Teachers.destroy({
+            where:{
+                ci
+            }
+        })
+        
+       if(response === 1){
+           res.status(200).json({message: "Se ha eliminado correctamente al profesor"})
+       }else{
+            res.status(200).json({error: "La cédula ingresada no pertenece a ningun profesor registrado"})
+       }
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({error: "Ha ocurrido un error al intetar eliminar el profesor"})
+    }
+
+}
+
+
+
+module.exports = { getTeacherData, setTeacherData, insertTeacher, getTeacherByCi, getTeacherList, fireTeacher }

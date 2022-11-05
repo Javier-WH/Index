@@ -11,16 +11,13 @@ async function getUserName(req, res){
         let teacher = await Teacher.findAll({where:{id}});
 
         let name = `${teacher[0].names} ${teacher[0].lastNames}`;
-
-        res.json({name, id});
+        let ci = teacher[0].ci
+        res.json({name, id, ci});
 
     } catch (error) {
         res.status(500).json({error: "Ha ocurrido un error"});
     }
-    
-
-
-    
+ 
 }
 
 
