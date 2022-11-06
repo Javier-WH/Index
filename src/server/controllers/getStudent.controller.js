@@ -27,13 +27,12 @@ async function getStudentList(req, res) {
         let schoolYear = seccionData[seccionData.length - 2]
         let seccion = seccionData[seccionData.length - 1]
 
-
         let rawList = await StudentList.findAll({
             include: {
                 model: Grades,
                 as: "grades",
                 where: {
-                    period: 2022,
+                    period: 2022,///////////////////////////
                     section: seccion,
                     schoolYear,
                     status: true
@@ -452,6 +451,70 @@ async function setPhoto(req, res) {
 
 }
 
+////////////////////////////////////////////
+
+async function getStudentFullList(req, res) {
+    try {
+
+         let rawList = await StudentList.findAll({
+            include: {
+                model: Grades,
+                as: "grades"
+            }
+        })
+
+        if (rawList.length > 0) {
+            let list = rawList.map(register => {
+                let student = {
+                    ci: register.ci,
+                    names: register.names,
+                    lastNames: register.lastNames,
+                    id: register.id,
+                    photo: "default",
+                    gender: register.gender,
+                    subjects: register.grades[Number.parseInt(register.grades.length)-1].subjects,
+                    seccion: register.grades[Number.parseInt(register.grades.length)-1].section,
+                    period: register.grades[Number.parseInt(register.grades.length)-1].period,
+                    grade: register.grades[Number.parseInt(register.grades.length)-1].schoolYear,
+                };
+                return student;
+            });
+            res.json(list);
+        } else {
+            res.json([]);
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json([]);
+    }
+}
+////
+
+async function deleteStudent(req, res){
+    let ci = req.body.ci;
+
+    try {
+        
+        let request = await StudentList.destroy({
+            where:{
+                ci
+            }
+        })
+
+        if(request === 0){
+            res.status(200).json({error: "La cédula suministrada no esta registrada"});
+        }else{
+            res.status(200).json({message: "El alumno ha sido borrado del sistema"});
+        }
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({error: "Ha ocurrido un error"})
+    }
+
+}
+
 module.exports = {
     getApp,
     getStudentList,
@@ -459,7 +522,9 @@ module.exports = {
     getStudent,
     getPhoto,
     setPhoto,
-    inscribeStudent
+    inscribeStudent,
+    getStudentFullList,
+    deleteStudent
 }
 
 /*
