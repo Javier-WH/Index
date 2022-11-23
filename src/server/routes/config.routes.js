@@ -1,7 +1,8 @@
 const express = require("express");
 const Router = express.Router();
 const {getConfig, setConfig} = require("../controllers/config.controller.js");
-const {getLogo, setLogo, restoreLogo} = require("../controllers/logoController.js")
+const {getLogo, setLogo, restoreLogo} = require("../controllers/logoController.js");
+const {getSeccions, saveSeccions} = require("../controllers/seccions.controller.js")
 
 const multer = require('multer');
 const path = require('path');
@@ -24,6 +25,9 @@ Router.post ("/logo",  multer({ storage, dest: "fileContainer" }).single("file")
 
 Router.delete("/logo", restoreLogo);
 
+Router.get("/seccions", getSeccions);
+
+Router.put("/seccions", express.json(), saveSeccions)
 
 
 module.exports = Router;

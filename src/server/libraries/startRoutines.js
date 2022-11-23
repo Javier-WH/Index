@@ -1,6 +1,7 @@
 const Pensum = require("../database/sequalize/models/config/pensum.model");
 const Config = require("../database/sequalize/models/config/config.model");
-const Teachers = require("../database/sequalize/models/teachers/teachers.model")
+const Teachers = require("../database/sequalize/models/teachers/teachers.model");
+const Seccions = require("../database/sequalize/models/config/seccions.model")
 const sequelize = require("../database/sequalize/connection.js")
 
 
@@ -9,6 +10,7 @@ async function routines() {
     checkPensum();
     checkConfig();
     checkAdmin();
+    checkSeccions();
 }
 
 
@@ -135,7 +137,7 @@ async function checkAdmin() {
             admin: true,
             user: "admin",
             password: "admin"
-        },{
+        }, {
             transaction: checkAdminTransaction
         })
 
@@ -154,7 +156,37 @@ async function checkAdmin() {
 
 }
 
+////////////////////
 
+async function checkSeccions() {
+
+    try {
+        let seccions = await Seccions.findAll();
+
+
+        if (seccions.length < 9) {
+            await Seccions.destroy({ where: {} });
+            
+            await Seccions.bulkCreate([
+                {grade:1, seccionsNames:[]},
+                {grade:2, seccionsNames:[]},
+                {grade:3, seccionsNames:[]},
+                {grade:4, seccionsNames:[]},
+                {grade:5, seccionsNames:[]},
+                {grade:6, seccionsNames:[]},
+                {grade:7, seccionsNames:[]},
+                {grade:8, seccionsNames:[]},
+                {grade:9, seccionsNames:[]}
+            ]);
+        }
+        console.log("No se han encontrado materias registradas")
+    } catch (error) {
+        checkSeccions();
+        console.log(error)
+    }
+
+
+}
 
 
 

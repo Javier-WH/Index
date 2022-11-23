@@ -5,7 +5,7 @@ class Grades extends Model {}
 Grades.init({
     subjects:DataTypes.JSON,
     period: DataTypes.INTEGER,
-    section: DataTypes.CHAR,
+    section: DataTypes.STRING,
     schoolYear: DataTypes.INTEGER, //grade
     failded: DataTypes.BOOLEAN,
     status: DataTypes.BOOLEAN //inscrito / no inscrito
