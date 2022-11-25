@@ -58,15 +58,26 @@ async function insertTeacher(req, res) {
         //obtiene las materias del profesor enviadas desde el cliente
 
         let obj = {};
-        if(subjects !== undefined){
+        if (subjects !== undefined) {
             subjects.map(item => {
-                let subject = item.substring(0, item.length - 3)
-                let grade = item.substring(item.length - 3)
-                
+                let grade;
+                let subject;
+
+                ////cprreccion momentanea de bug debido al cambio de formato en las secciones
+                if (item.includes(" (")) {
+                    let data = item.split(" (")
+                    subject = data[0];
+                    grade = data[1].replace("-", "").replace(")", "");
+                } else {
+                    subject = item.substring(0, item.length - 3)
+                    grade = item.substring(item.length - 3)
+                }
+
+
                 if (obj[subject] === undefined) {
                     obj[subject] = [];
                 }
-                
+
                 obj[subject].push(grade)
             })
         }
@@ -85,21 +96,21 @@ async function insertTeacher(req, res) {
         if (teacherList.length > 0) {
             let tch = teacherList[0];
             let teacherId = teacherList[0].id
-            
+
             await Teachers.update({
                 names: names === undefined ? tch.names : names,
                 lastNames: lastNames === undefined ? tch.lastNames : lastNames,
                 ci: ci === undefined ? tch.ci : ci,
                 gender: gender === undefined ? tch.gender : gender,
                 birthdate: birthdate === undefined ? tch.birthdate : birthdate,
-                phone : phone === undefined ? tch.phone : phone,
-                email : email === undefined ? tch.email : email,
+                phone: phone === undefined ? tch.phone : phone,
+                email: email === undefined ? tch.email : email,
                 admin: admin === undefined ? tch.admin : admin,
                 user: user === undefined ? tch.user : user,
                 password: password === undefined ? tch.password : password
             }, {
                 where: {
-                    id:teacherId
+                    id: teacherId
                 },
                 transaction: teacherTransaction
             })
@@ -179,7 +190,8 @@ async function getTeacherByCi(req, res) {
 
             Object.keys(rawSubjects).map(r => {
                 rawSubjects[r].map(sec => {
-                    objSub.push(`${r}${sec}`)
+               
+                    objSub.push(`${r} (${sec[0]}-${sec.substring(1, sec.length)})`)
                 })
             })
         }
@@ -199,36 +211,36 @@ async function getTeacherByCi(req, res) {
 
 /////
 
-async function getTeacherList(req, res){
+async function getTeacherList(req, res) {
     try {
         let list = await Teachers.findAll();
 
         res.status(200).json(list);
     } catch (error) {
         console.log(error)
-        res.status(500).json({error: "Ha ocurrido un error al consultar la lista de profesores"})
+        res.status(500).json({ error: "Ha ocurrido un error al consultar la lista de profesores" })
     }
 }
 
-async function fireTeacher(req, res){
+async function fireTeacher(req, res) {
 
     try {
         let ci = req.body.ci;
         let response = await Teachers.destroy({
-            where:{
+            where: {
                 ci
             }
         })
-        
-       if(response === 1){
-           res.status(200).json({message: "Se ha eliminado correctamente al profesor"})
-       }else{
-            res.status(200).json({error: "La cédula ingresada no pertenece a ningun profesor registrado"})
-       }
+
+        if (response === 1) {
+            res.status(200).json({ message: "Se ha eliminado correctamente al profesor" })
+        } else {
+            res.status(200).json({ error: "La cédula ingresada no pertenece a ningun profesor registrado" })
+        }
 
     } catch (error) {
         console.log(error);
-        res.status(500).json({error: "Ha ocurrido un error al intetar eliminar el profesor"})
+        res.status(500).json({ error: "Ha ocurrido un error al intetar eliminar el profesor" })
     }
 
 }

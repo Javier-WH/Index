@@ -1,5 +1,6 @@
 const Grades = require("../database/sequalize/models/students/grades.model.js");
 const Config = require("../database/sequalize/models/config/config.model");
+const {getSchoolYear, getSeccionName, getSubjectName} = require("../libraries/translateSeccionData")
 
 
 async function saveGrades(req, res) {
@@ -27,10 +28,13 @@ async function saveGrades(req, res) {
 
             let id = change.id;
 
-            let seccionData = change.session.replaceAll("  ", " ");
-            let schoolYear = seccionData[seccionData.length - 2]
-            let section = seccionData[seccionData.length - 1]
-            let subject = seccionData.substring(0, seccionData.length - 3)
+            let seccionData = change.session.replace("  ", " ");
+           // let schoolYear = seccionData[seccionData.length - 2]
+           // let section = seccionData[seccionData.length - 1]
+           // let subject = seccionData.substring(0, seccionData.length - 3)
+            let schoolYear = getSchoolYear(seccionData);
+            let section = getSeccionName(seccionData);
+            let subject = getSubjectName(seccionData);
 
             let query = await Grades.findAll({
                 where: {

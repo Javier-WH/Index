@@ -13,7 +13,7 @@ const newStudent = require("../libraries/insertNewStudent.js");
 const updateStudent = require("../libraries/UpdateInscribeStudent.js");
 const { checkFailed } = require("../libraries/checkFailSubjects.js");
 const fs = require('fs');
-
+const { getSchoolYear, getSubjectName, getSeccionName } = require("../libraries/translateSeccionData")
 
 function getApp(req, res) {
     res.sendFile(res.sendFile(path.join(__dirname, "../../client/views/app.html")))
@@ -23,9 +23,19 @@ async function getStudentList(req, res) {
     try {
 
         ///esto corrige un bug que se genera en un lugar indeterminado, donde se agrega un espacio adicional al valor de la seccion
-        let seccionData = req.query.seccion.replaceAll("  ", " ");
-        let schoolYear = seccionData[seccionData.length - 2]
-        let seccion = seccionData[seccionData.length - 1]
+        let seccionData = req.query.seccion.replace("  ", " ");
+
+        // let schoolYear = seccionData[seccionData.length - 2]
+        let schoolYear = getSchoolYear(seccionData);
+
+        //let seccion = seccionData[seccionData.length - 1]
+        let seccion = getSeccionName(seccionData);
+
+        if (schoolYear === undefined || seccion === undefined) {
+            res.status(403);
+            return
+        }
+
 
         let rawList = await StudentList.findAll({
             include: {
@@ -53,6 +63,7 @@ async function getStudentList(req, res) {
                 };
                 return student;
             });
+
             res.json(list);
         } else {
             res.json([]);
@@ -67,7 +78,7 @@ async function getStudentList(req, res) {
 async function inscribeStudent(req, res) {
     const updateStudentTransacction = await sequelize.transaction();
     try {
-    
+
         let data = req.body;
 
         let existSTD = await StudentList.findAll({
@@ -212,7 +223,7 @@ async function inscribeStudent(req, res) {
             smarthPhone: data.smarthPhone,
             pc: data.pc,
             becas: data.becas,
-            becaName : data.becaName,
+            becaName: data.becaName,
             studentPatriaCode: data.studentPatriaCode,
             studentPatriaSerial: data.studentPatriaSerial
         }, {
@@ -222,7 +233,7 @@ async function inscribeStudent(req, res) {
             transaction: updateStudentTransacction
         })
 
-        
+
         await updateStudentTransacction.commit();
         res.status(200).json({ message: "OK" })
 
@@ -456,7 +467,7 @@ async function setPhoto(req, res) {
 async function getStudentFullList(req, res) {
     try {
 
-         let rawList = await StudentList.findAll({
+        let rawList = await StudentList.findAll({
             include: {
                 model: Grades,
                 as: "grades"
@@ -472,10 +483,10 @@ async function getStudentFullList(req, res) {
                     id: register.id,
                     photo: "default",
                     gender: register.gender,
-                    subjects: register.grades[Number.parseInt(register.grades.length)-1].subjects,
-                    seccion: register.grades[Number.parseInt(register.grades.length)-1].section,
-                    period: register.grades[Number.parseInt(register.grades.length)-1].period,
-                    grade: register.grades[Number.parseInt(register.grades.length)-1].schoolYear,
+                    subjects: register.grades[Number.parseInt(register.grades.length) - 1].subjects,
+                    seccion: register.grades[Number.parseInt(register.grades.length) - 1].section,
+                    period: register.grades[Number.parseInt(register.grades.length) - 1].period,
+                    grade: register.grades[Number.parseInt(register.grades.length) - 1].schoolYear,
                 };
                 return student;
             });
@@ -490,27 +501,27 @@ async function getStudentFullList(req, res) {
 }
 ////
 
-async function deleteStudent(req, res){
+async function deleteStudent(req, res) {
     let ci = req.body.ci;
 
     try {
-        
+
         let request = await StudentList.destroy({
-            where:{
+            where: {
                 ci
             }
         })
 
-        if(request === 0){
-            res.status(200).json({error: "La cédula suministrada no esta registrada"});
-        }else{
-            res.status(200).json({message: "El alumno ha sido borrado del sistema"});
+        if (request === 0) {
+            res.status(200).json({ error: "La cédula suministrada no esta registrada" });
+        } else {
+            res.status(200).json({ message: "El alumno ha sido borrado del sistema" });
         }
 
 
     } catch (error) {
         console.log(error)
-        res.status(500).json({error: "Ha ocurrido un error"})
+        res.status(500).json({ error: "Ha ocurrido un error" })
     }
 
 }

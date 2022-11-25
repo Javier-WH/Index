@@ -136,7 +136,8 @@ async function checkAdmin() {
             lastNames: "General",
             admin: true,
             user: "admin",
-            password: "admin"
+            password: "admin",
+            ci: "1010"
         }, {
             transaction: checkAdminTransaction
         })
