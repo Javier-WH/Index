@@ -11,7 +11,8 @@ Config.init({
     maxSeccionCap : DataTypes.INTEGER,
     maxGradeCap : DataTypes.INTEGER,
     institutionName: DataTypes.STRING,
-    failedNumber : DataTypes.INTEGER
+    failedNumber : DataTypes.INTEGER,
+    evalPlan : DataTypes.BOOLEAN
 }, {
     sequelize,
     modelName: "config",

@@ -1,7 +1,7 @@
 const express = require("express");
 const Router = express.Router();
 
-const {getPensum, getMatricula, updatePensum} = require("../controllers/pensum.controller.js")
+const {getMatricula, updatePensum} = require("../controllers/pensum.controller.js")
 
 
 Router.get("/matricula", getMatricula);

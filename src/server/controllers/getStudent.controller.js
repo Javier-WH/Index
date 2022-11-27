@@ -94,6 +94,8 @@ async function inscribeStudent(req, res) {
         }
         let studentId = existSTD[0].id
 
+
+
         await StudentList.update({
             names: data.names,
             lastNames: data.lastNames,

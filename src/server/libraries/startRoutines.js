@@ -93,7 +93,8 @@ async function checkConfig() {
                 maxSeccionCap: 30,
                 maxGradeCap: 20,
                 institutionName: "No se ha asignado un nombre a la institución",
-                failedNumber: 3
+                failedNumber: 3,
+                evalPlan: true
             }, {
                 transaction: checkConfigTrasaction
             })
