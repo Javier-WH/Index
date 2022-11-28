@@ -2,7 +2,13 @@ const StdEval = require("../database/sequalize/models/students/stdEvalPlan.model
 
 async function saveStdEval(req, res){
     let {stdid, stdGrades, section, schoolYear, failded, status} = req.body
-    
+ 
+    if(stdid === undefined || stdGrades === undefined || section === undefined || schoolYear === undefined){
+        res.status(403).json({error: "Los datos son incorrectos"})
+        return
+    }
+
+
     try {
 
         let pull = await StdEval.findAll({
