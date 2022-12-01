@@ -24,6 +24,7 @@ app.use(require("./routes/config.routes.js"));
 app.use(require("./routes/evalPlan.routes.js"))
 
 require("./database/sequalize/relations/relations.js");
+
 app.listen(process.env.PORT, process.env.IP, error=>{
     console.clear();
     if(error){

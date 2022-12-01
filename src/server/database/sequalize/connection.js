@@ -14,7 +14,7 @@ async function getConnection() {
         console.log('La conexión a la base de datos ha sido existosa');
 
     } catch (error) {
-        console.error(`Ha ocurrido un error al conectarse con la base de datos: ${error.code}`);
+        console.error(`Ha ocurrido un error al conectarse con la base de datos`);
     }
 }
 
