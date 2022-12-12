@@ -41,7 +41,6 @@ var options = {
 let connection = mysql2.createPool(options);
 let sessionStore = new MySQLStore({}, connection);
 
-//var sessionStore = new MySQLStore(options);
 
 let sess = session({
     key: 'index_cookie',

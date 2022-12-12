@@ -160,9 +160,9 @@ async function insertTeacher(req, res) {
 
 async function getTeacherByCi(req, res) {
     let ci = req.query.ci;
+    let getTeacerTransaction = await sequelize.transaction();
 
     try {
-        let getTeacerTransaction = await sequelize.transaction();
 
 
         let teacherList = await Teachers.findAll({
