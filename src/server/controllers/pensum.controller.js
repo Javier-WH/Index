@@ -44,7 +44,7 @@ async function getMatricula(req, res) {
 
 async function updatePensum(req, res){
     let subjectsList = req.body;
-    console.log(subjectsList)
+    //console.log(subjectsList)
     try {
         for(let sub of subjectsList){
             let subjects = sub.subjects;
